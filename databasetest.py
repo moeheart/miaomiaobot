@@ -15,7 +15,7 @@ cursor.execute(sql)
 sql = """INSERT INTO testtt VALUES ('myname', '12345', 1)"""
 cursor.execute(sql)
 
-sql = """SELECT * from test"""
+sql = """SELECT * from testt"""
 cursor.execute(sql)
 result = cursor.fetchall()
 for row in result:
