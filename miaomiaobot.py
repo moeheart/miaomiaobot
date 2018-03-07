@@ -29,7 +29,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     length = self.headers['content-length'];
     nbytes = int(length)
     data = self.rfile.read(nbytes)
-    jdata = json.loads(data)
+    jdata = json.loads(data.decode())
     content = jdata["content"]
     print(jdata["content"])
     nickname = {
