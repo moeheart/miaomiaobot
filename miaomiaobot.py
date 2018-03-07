@@ -179,11 +179,11 @@ class RequestHandler(BaseHTTPRequestHandler):
                 replycontent = '取消成功！江湖不见！'
                 
     if replycontent != '':
-        replydata = [{'reply':replycontent.encode('utf-8')}]
+        replydata = [{'reply':replycontent}]
     else:
         replydata = [{'nothing':'yes'}]
     replyjson = json.dumps(replydata)
-    self.wfile.write(replyjson)
+    self.wfile.write(replyjson.encode('utf-8'))
     
 addr = ('',8888)
 server = HTTPServer(addr,RequestHandler)
