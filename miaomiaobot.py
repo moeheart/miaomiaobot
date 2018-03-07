@@ -100,7 +100,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     replycontent = ''
     
     print(jdata)
-    savedGroup = ['457118455','702977221']
+    savedGroup = ['miaomiao测试群','【千衷】团本通知群']
     if ("group" in jdata.keys()) and (jdata["group"] in savedGroup): 
         res = re.search("^(.*)报名(.*)$", content)
         if res:
