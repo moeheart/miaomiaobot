@@ -30,6 +30,7 @@ cursor.execute(sql)
 for i in range(len(sch)):
     sql = """INSERT INTO schedule VALUES ('%s', '%s', '%s', 0)"""%(sch[i],name[i],time[i])
     cursor.execute(sql)
+    print("Added")
     for j in range(1,26):
         sql = """INSERT INTO playerinfo VALUES ('%s', %d, '%s', '', '')"""%(sch[i],j,type[j-1])
         cursor.execute(sql)
