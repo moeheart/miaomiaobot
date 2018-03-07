@@ -3,6 +3,7 @@ from http.server import HTTPServer,BaseHTTPRequestHandler
 import json
 import read
 import re
+import pymysql
 
 class RequestHandler(BaseHTTPRequestHandler):
   def _writeheaders(self):
@@ -10,8 +11,6 @@ class RequestHandler(BaseHTTPRequestHandler):
     #print(self.headers)
     self.send_response(200);
     self.send_header('Connection','close');
-    self.send_header('Content-type','application/json');
-    self.end_headers()
   def do_Head(self):
     self._writeheaders()
   def do_GET(self):
@@ -103,6 +102,8 @@ class RequestHandler(BaseHTTPRequestHandler):
     print(jdata)
     savedGroup = ['miaomiao测试群','【千衷】团本通知群']
     if ("group" in jdata.keys()) and (jdata["group"] in savedGroup): 
+        db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=5000 )
+        cursor = db.cursor()
         res = re.search("^(.*)报名(.*)$", content)
         if res:
             if res.group(1) in nickname.keys():
@@ -183,8 +184,12 @@ class RequestHandler(BaseHTTPRequestHandler):
                 
     if replycontent != '':
         replydata = [{'reply':replycontent}]
+        self.send_header('Content-type','application/json');
+        self.end_headers()
     else:
         replydata = [{'nothing':'yes'}]
+        self.send_header('Content-type','html/text');
+        self.end_headers()
     replyjson = json.dumps(replydata)
     
     print(replyjson)
