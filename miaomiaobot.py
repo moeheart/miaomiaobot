@@ -1,5 +1,5 @@
 # coding:utf-8
-from BaseHTTPServer import HTTPServer,BaseHTTPRequestHandler
+from http.server import HTTPServer,BaseHTTPRequestHandler
 import json
 import read
 
