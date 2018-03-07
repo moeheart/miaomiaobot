@@ -95,87 +95,88 @@ class RequestHandler(BaseHTTPRequestHandler):
     "毒奶":"奶毒",
     "补天诀":"奶毒",
     "补天":"奶毒"}
-    savedGroup = ['457118455']
     
     replycontent = ''
     
-    res = re.search("^(.*)报名(.*)$", content)
-    if res:
-        if res.group(1) in nickname.keys():
-            type = nickname[res.group(1)]
-            sch = res.group(2)
-            sql = """SELECT sch, num from schedule WHERE sch = '%s'"""%sch
+    savedGroup = ['457118455','702977221']
+    if ("group" in jdata.keys()) and (jdata["group"] in savedGroup): 
+        res = re.search("^(.*)报名(.*)$", content)
+        if res:
+            if res.group(1) in nickname.keys():
+                type = nickname[res.group(1)]
+                sch = res.group(2)
+                sql = """SELECT sch, num from schedule WHERE sch = '%s'"""%sch
+                cursor.execute(sql)
+                result0 = cursor.fetchall()
+                if (result0):
+                    sql = """SELECT id, uid, name from playerinfo WHERE sch = '%s' AND type = '%s'"""%(sch,type)
+                    cursor.execute(sql)
+                    result = cursor.fetchall()
+                    flag = 0
+                    id = 0
+                    others = ' '
+                    for line in result:
+                        if line[1] == '':
+                            flag = 1
+                            id = line[0]
+                            break
+                        elif line[1] == jdata["sender_uid"]:
+                            flag = 2
+                            replycontent = '%s，你已经报过名啦'%jdata["sender"]
+                        else:
+                            others = others + line[2] + ' '
+                    if flag == 0:
+                        replycontent = '没有坑啦，去找%s打一架吧'%others
+                    elif flag == 1:
+                        sql = """UPDATE playerinfo SET uid = '%s', name = '%s' WHERE sch = '%s' AND id = %d """%(jdata["sender_uid"],jdata["sender"],sch,id)
+                        cursor.execute(sql)
+                        sql = """UPDATE schedule SET num = %d WHERE sch = '%s'"""%(result0[0][1],sch)
+                        cursor.execute(sql)
+                        replycontent = '报名成功！id为%d'%id
+                    
+        res = re.search("^有(什么本|本吗)？?$", content)
+        if res:
+            first = 1
+            sql = """SELECT sch, name, time, num from schedule"""
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            if result:
+                for line in result:
+                    if (first):
+                        first = 0
+                    else:
+                        replycontent = replycontent + '\n'
+                        replycontent = replycontent + '【%s】有 %s ，时间%s，已报名%d人'%(line[0],line[1],line[2],line[3])
+            else:
+                replycontent = '团长咸鱼去了，并没有本'
+                
+        res = re.search("^(.*)报名情况$", content)
+        if res:
+            sch = res.group(1)
+            sql = """SELECT sch, name, num from schedule WHERE sch = '%s'"""%sch
             cursor.execute(sql)
             result0 = cursor.fetchall()
             if (result0):
-                sql = """SELECT id, uid, name from playerinfo WHERE sch = '%s' AND type = '%s'"""%(sch,type)
+                first = 1
+                sql = """SELECT id, type, name from playerinfo WHERE sch = '%s'"""%(sch)
                 cursor.execute(sql)
                 result = cursor.fetchall()
-                flag = 0
-                id = 0
-                others = ' '
+                replycontent = '%s %s已报名%d人'%(sch,result0[0][1],result0[0][2])
                 for line in result:
-                    if line[1] == '':
-                        flag = 1
-                        id = line[0]
-                        break
-                    elif line[1] == jdata["sender_uid"]:
-                        flag = 2
-                        replycontent = '%s，你已经报过名啦'%jdata["sender"]
-                    else:
-                        others = others + line[2] + ' '
-                if flag == 0:
-                    replycontent = '没有坑啦，去找%s打一架吧'%others
-                elif flag == 1:
-                    sql = """UPDATE playerinfo SET uid = '%s', name = '%s' WHERE sch = '%s' AND id = %d """%(jdata["sender_uid"],jdata["sender"],sch,id)
-                    cursor.execute(sql)
-                    sql = """UPDATE schedule SET num = %d WHERE sch = '%s'"""%(result0[0][1],sch)
-                    cursor.execute(sql)
-                    replycontent = '报名成功！id为%d'%id
-                
-    res = re.search("^有(什么本|本吗)？?$", content)
-    if res:
-        first = 1
-        sql = """SELECT sch, name, time, num from schedule"""
-        cursor.execute(sql)
-        result = cursor.fetchall()
-        if result:
-            for line in result:
-                if (first):
-                    first = 0
-                else:
                     replycontent = replycontent + '\n'
-                    replycontent = replycontent + '【%s】有 %s ，时间%s，已报名%d人'%(line[0],line[1],line[2],line[3])
-        else:
-            replycontent = '团长咸鱼去了，并没有本'
-            
-    res = re.search("^(.*)报名情况$", content)
-    if res:
-        sch = res.group(1)
-        sql = """SELECT sch, name, num from schedule WHERE sch = '%s'"""%sch
-        cursor.execute(sql)
-        result0 = cursor.fetchall()
-        if (result0):
-            first = 1
-            sql = """SELECT id, type, name from playerinfo WHERE sch = '%s'"""%(sch)
+                    replycontent = replycontent + '%d %s: %s'%(line[0],line[1],line[2])
+                    
+        res = re.search("^取消报名$", content)
+        if res:
+            sch = res.group(1)
+            sql = """SELECT sch, id from schedule WHERE uid = '%s'"""%jdata["sender_uid"]
             cursor.execute(sql)
             result = cursor.fetchall()
-            replycontent = '%s %s已报名%d人'%(sch,result0[0][1],result0[0][2])
-            for line in result:
-                replycontent = replycontent + '\n'
-                replycontent = replycontent + '%d %s: %s'%(line[0],line[1],line[2])
-                
-    res = re.search("^取消报名$", content)
-    if res:
-        sch = res.group(1)
-        sql = """SELECT sch, id from schedule WHERE uid = '%s'"""%jdata["sender_uid"]
-        cursor.execute(sql)
-        result = cursor.fetchall()
-        if result:
-            sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = %s"""%jdata["sender_uid"]
-            cursor.execute(sql)
-            result = cursor.fetchall()
-            replycontent = '取消成功！江湖不见！'
+            if result:
+                sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = %s"""%jdata["sender_uid"]
+                cursor.execute(sql)
+                result = cursor.fetchall()
+                replycontent = '取消成功！江湖不见！'
                 
     if replycontent != '':
         replydata = [{'reply':replycontent}]
