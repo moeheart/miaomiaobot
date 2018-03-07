@@ -1,6 +1,6 @@
 import pymysql
 
-db = pymysql.connect("172.21.0.10","root","testpwd1","test" )
+db = pymysql.connect("172.21.0.10:5000","root","testpwd1","test" )
 
 cursor = db.cursor()
 
