@@ -193,7 +193,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     replyjson = json.dumps(replydata)
     
     print(replyjson)
-    self.wfile.write(replyjson)
+    self.wfile.write(replyjson.encode('utf-8'))
     
 addr = ('',8888)
 server = HTTPServer(addr,RequestHandler)
