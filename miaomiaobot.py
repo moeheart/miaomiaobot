@@ -5,8 +5,8 @@ import read
 
 class RequestHandler(BaseHTTPRequestHandler):
   def _writeheaders(self):
-    print self.path
-    print self.headers
+    #print(self.path)
+    #print(self.headers)
     self.send_response(200);
     self.send_header('Content-type','application/json');
     self.end_headers()
@@ -183,6 +183,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         replyjson = json.dumps(replydata)
         self.wfile.write(replyjson)
     
-addr = ('',8000)
+addr = ('',8888)
 server = HTTPServer(addr,RequestHandler)
 server.serve_forever()
