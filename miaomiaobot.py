@@ -184,7 +184,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 
     if replycontent != '':
         replydata = [{'reply':replycontent}]
-        self.send_header('Content-type','application/json');
+        self.send_header('Content-type','application/json;charset=UTF-8');
         self.end_headers()
     else:
         replydata = [{'nothing':'yes'}]
@@ -193,7 +193,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     replyjson = json.dumps(replydata)
     
     print(replyjson)
-    self.wfile.write(replyjson.encode('utf-8'))
+    self.wfile.write(replyjson)
     
 addr = ('',8888)
 server = HTTPServer(addr,RequestHandler)
