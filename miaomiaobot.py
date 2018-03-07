@@ -180,8 +180,10 @@ class RequestHandler(BaseHTTPRequestHandler):
                 
     if replycontent != '':
         replydata = [{'reply':replycontent.encode('utf-8')}]
-        replyjson = json.dumps(replydata)
-        self.wfile.write(replyjson)
+    else:
+        replydata = [{'nothing':'yes'}]
+    replyjson = json.dumps(replydata)
+    self.wfile.write(replyjson)
     
 addr = ('',8888)
 server = HTTPServer(addr,RequestHandler)
