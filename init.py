@@ -6,11 +6,11 @@ cursor = db.cursor()
 cursor.execute("DROP TABLE IF EXISTS playerinfo")
 cursor.execute("DROP TABLE IF EXISTS schedule")
 
-sch = ["Wed"]
-name = ["111"]
-time = ["19:00"]
+sch = ["周五"]
+name = ["战兽山"]
+time = ["13:30"]
 
-type = ["1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]
+type = ["丐帮","藏剑","霸刀","剑纯","苍云","丐帮","藏剑","霸刀","剑纯","惊羽","大师","冰心","花间","气纯","毒经","大师","冰心","花间","奶花","奶秀","明尊","铁牢","洗髓","奶歌","奶毒"]
 
 sql = """CREATE TABLE schedule (
          sch CHAR(30),
@@ -34,11 +34,5 @@ for i in range(len(sch)):
     for j in range(1,26):
         sql = """INSERT INTO playerinfo VALUES ('%s', %d, '%s', '', '')"""%(sch[i],j,type[j-1])
         cursor.execute(sql)
-        
-sql = """SELECT * from playerinfo"""
-cursor.execute(sql)
-result = cursor.fetchall()
-for row in result:
-    print(row)
 
 db.close()
