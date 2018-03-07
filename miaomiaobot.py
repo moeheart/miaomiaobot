@@ -2,6 +2,7 @@
 from http.server import HTTPServer,BaseHTTPRequestHandler
 import json
 import read
+import re
 
 class RequestHandler(BaseHTTPRequestHandler):
   def _writeheaders(self):
@@ -122,7 +123,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                             flag = 1
                             id = line[0]
                             break
-                        elif line[1] == jdata["sender_uid"]:
+                        elif line[1] == jdata["sender_id"]:
                             flag = 2
                             replycontent = '%s，你已经报过名啦'%jdata["sender"]
                         else:
@@ -130,7 +131,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                     if flag == 0:
                         replycontent = '没有坑啦，去找%s打一架吧'%others
                     elif flag == 1:
-                        sql = """UPDATE playerinfo SET uid = '%s', name = '%s' WHERE sch = '%s' AND id = %d """%(jdata["sender_uid"],jdata["sender"],sch,id)
+                        sql = """UPDATE playerinfo SET uid = '%s', name = '%s' WHERE sch = '%s' AND id = %d """%(jdata["sender_id"],jdata["sender"],sch,id)
                         cursor.execute(sql)
                         sql = """UPDATE schedule SET num = %d WHERE sch = '%s'"""%(result0[0][1],sch)
                         cursor.execute(sql)
@@ -171,11 +172,11 @@ class RequestHandler(BaseHTTPRequestHandler):
         res = re.search("^取消报名$", content)
         if res:
             sch = res.group(1)
-            sql = """SELECT sch, id from schedule WHERE uid = '%s'"""%jdata["sender_uid"]
+            sql = """SELECT sch, id from schedule WHERE uid = '%s'"""%jdata["sender_id"]
             cursor.execute(sql)
             result = cursor.fetchall()
             if result:
-                sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = %s"""%jdata["sender_uid"]
+                sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = %s"""%jdata["sender_id"]
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 replycontent = '取消成功！江湖不见！'
