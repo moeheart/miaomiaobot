@@ -29,7 +29,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     length = self.headers['content-length'];
     nbytes = int(length)
     data = self.rfile.read(nbytes)
-    jdata = json.loads(data.decode())
+    jdata = json.loads(data.decode('utf-8'))
     content = jdata["content"]
     print(jdata["content"])
     nickname = {
@@ -179,7 +179,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 replycontent = '取消成功！江湖不见！'
                 
     if replycontent != '':
-        replydata = [{'reply':replycontent}]
+        replydata = [{'reply':replycontent.encode('utf-8')}]
         replyjson = json.dumps(replydata)
         self.wfile.write(replyjson)
     
