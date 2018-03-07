@@ -8,6 +8,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     #print(self.path)
     #print(self.headers)
     self.send_response(200);
+    self.send_header('Connection','close');
     self.send_header('Content-type','application/json');
     self.end_headers()
   def do_Head(self):
@@ -183,6 +184,8 @@ class RequestHandler(BaseHTTPRequestHandler):
     else:
         replydata = [{'nothing':'yes'}]
     replyjson = json.dumps(replydata)
+    
+    print(replyjson)
     self.wfile.write(replyjson.encode('utf-8'))
     
 addr = ('',8888)
