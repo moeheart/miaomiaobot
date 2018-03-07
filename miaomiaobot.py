@@ -26,7 +26,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 </html>"""+str(self.headers))
   def do_POST(self):
     self._writeheaders()
-    length = self.headers.getheader('content-length');
+    length = self.headers['content-length'];
     nbytes = int(length)
     data = self.rfile.read(nbytes)
     jdata = json.loads(data)
