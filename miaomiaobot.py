@@ -153,6 +153,7 @@ def handle():
             sql = """SELECT sch, name, time, num from schedule"""
             cursor.execute(sql)
             result = cursor.fetchall()
+            print(result)
             if result:
                 for line in result:
                     if (first):
