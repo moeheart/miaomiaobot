@@ -53,4 +53,12 @@ for i in range(len(sch)):
         sql = """INSERT INTO playerinfo VALUES ('%s', %d, '%s', '', '')"""%(sch[i],j,type[j-1])
         cursor.execute(sql)
 
+sql = """SELECT sch, name, time, num from schedule"""
+cursor.execute(sql)
+result = cursor.fetchall()
+if result:
+    for line in result:
+        print(line)
+        
+        
 db.close()

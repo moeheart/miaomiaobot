@@ -201,8 +201,9 @@ def handle():
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 sql = """UPDATE schedule SET num = %d WHERE sch = %s"""%(result[0][0]+minus[sch], sch)
-                cursor.execute(sql)          
-                
+                cursor.execute(sql)  
+        db.close()  
+    
     if replycontent != '':
         replydata = {'reply':replycontent}
         return jsonify(replydata)
