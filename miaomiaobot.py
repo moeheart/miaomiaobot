@@ -164,7 +164,7 @@ def handle():
                             else:
                                 others = others + line[2] + ' '
                     if flag == 0:
-                        if others = ' ':
+                        if others == ' ':
                             replycontent = '你确定你的职业能进本吗？'
                         else:
                             replycontent = '没有坑啦，去找%s打一架吧'%others
