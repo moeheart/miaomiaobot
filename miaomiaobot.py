@@ -152,18 +152,22 @@ def handle():
                     flag = 0
                     id = 0
                     others = ' '
-                    for line in result:
-                        if line[1] == '':
-                            flag = 1
-                            id = line[0]
-                            break
-                        elif line[1] == jdata["sender_id"]:
-                            flag = 2
-                            replycontent = '%s，你已经报过名啦'%jdata["sender"]
-                        else:
-                            others = others + line[2] + ' '
+                    if result:
+                        for line in result:
+                            if line[1] == '':
+                                flag = 1
+                                id = line[0]
+                                break
+                            elif line[1] == jdata["sender_id"]:
+                                flag = 2
+                                replycontent = '%s，你已经报过名啦'%jdata["sender"]
+                            else:
+                                others = others + line[2] + ' '
                     if flag == 0:
-                        replycontent = '没有坑啦，去找%s打一架吧'%others
+                        if others = ' ':
+                            replycontent = '你确定你的职业能进本吗？'
+                        else:
+                            replycontent = '没有坑啦，去找%s打一架吧'%others
                     elif flag == 1:
                         sql = """UPDATE playerinfo SET uid = '%s', name = '%s' WHERE sch = '%s' AND id = %d """%(jdata["sender_id"],jdata["sender"],sch,id)
                         cursor.execute(sql)
