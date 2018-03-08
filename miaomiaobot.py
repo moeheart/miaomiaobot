@@ -198,7 +198,7 @@ def handle():
                 sql = """SELECT num from schedule WHERE sch = '%s'"""%sch
                 cursor.execute(sql)
                 result = cursor.fetchall()
-                sql = """UPDATE schedule SET num = %d WHERE sch = %s"""%(result[0][0]+minus[sch], sch)
+                sql = """UPDATE schedule SET num = %d WHERE sch = '%s'"""%(result[0][0]+minus[sch], sch)
                 cursor.execute(sql)  
         db.commit()
         db.close()  
