@@ -12,11 +12,29 @@ time = ["13:30"]
 
 type = ["丐帮","藏剑","霸刀","剑纯","苍云","丐帮","藏剑","霸刀","剑纯","惊羽","大师","冰心","花间","气纯","毒经","大师","冰心","花间","奶花","奶秀","明尊","铁牢","洗髓","奶歌","奶毒"]
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 sql = """CREATE TABLE schedule (
          sch CHAR(30),
          name CHAR(30),
          time CHAR(30),
-         num INT )"""
+         num INT ) DEFAULT CHARSET utf8"""
 cursor.execute(sql)
 
 sql = """CREATE TABLE playerinfo (
@@ -24,7 +42,7 @@ sql = """CREATE TABLE playerinfo (
          id INT,
          type CHAR(32),
          uid CHAR(32),
-         name CHAR(32) )"""
+         name CHAR(32) ) DEFAULT CHARSET utf8"""
 cursor.execute(sql)
 
 for i in range(len(sch)):

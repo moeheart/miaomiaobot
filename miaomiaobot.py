@@ -1,38 +1,47 @@
 # coding:utf-8
-from http.server import HTTPServer,BaseHTTPRequestHandler
+from flask import Flask    
+from flask import request    
+from flask import make_response,Response
 import json
 import read
 import re
 import pymysql
 
-class RequestHandler(BaseHTTPRequestHandler):
-  def _writeheaders(self):
-    #print(self.path)
-    #print(self.headers)
-    self.send_response(200);
-    self.send_header('Connection','close');
-  def do_Head(self):
-    self._writeheaders()
-  def do_GET(self):
-    self._writeheaders()
-    self.wfile.write("""<!DOCTYPE HTML>
-<html lang="en-US">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-<p>this is get!</p>
-</body>
-</html>"""+str(self.headers))
-  def do_POST(self):
-    self._writeheaders()
-    length = self.headers['content-length'];
-    nbytes = int(length)
-    data = self.rfile.read(nbytes)
-    jdata = json.loads(data.decode('utf-8'))
+app = Flask(__name__) 
+app.config['JSON_AS_ASCII'] = False
+
+def Response_headers(content):    
+    resp = Response(content)    
+    resp.headers['Access-Control-Allow-Origin'] = '*'    
+    return resp
+    
+@app.route('/', methods=['POST'])    
+def handle():    
+    jdata = request.json
     content = jdata["content"]
     print(jdata["content"])
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     nickname = {
     "丐帮":"丐帮",
     "丐丐":"丐帮",
@@ -173,7 +182,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         res = re.search("^取消报名$", content)
         if res:
             sch = res.group(1)
-            sql = """SELECT sch, id from schedule WHERE uid = '%s'"""%jdata["sender_id"]
+            sql = """SELECT sch, id from playerinfo WHERE uid = '%s'"""%jdata["sender_id"]
             cursor.execute(sql)
             result = cursor.fetchall()
             if result:
@@ -181,20 +190,26 @@ class RequestHandler(BaseHTTPRequestHandler):
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 replycontent = '取消成功！江湖不见！'
+                minus = {}
+                for line in result:
+                    if (line[0] not in minus.keys()):
+                        minus[line[0]] = -1
+                    else:
+                        minus[line[0]] -= 1
+            for sch in minus.keys():
+                sql = """SELECT num from schedule WHERE sch = '%s'"""%sch
+                cursor.execute(sql)
+                result = cursor.fetchall()
+                sql = """UPDATE schedule SET num = %d WHERE sch = %s"""%(result[0][0]+minus[sch], sch)
+                cursor.execute(sql)          
                 
     if replycontent != '':
         replydata = [{'reply':replycontent}]
-        self.send_header('Content-type','application/json;charset=UTF-8');
-        self.end_headers()
-    else:
-        replydata = [{'nothing':'yes'}]
-        self.send_header('Content-type','html/text');
-        self.end_headers()
-    replyjson = json.dumps(replydata)
+        return jsonify(replydata)
     
-    print(replyjson)
-    self.wfile.write(replyjson.encode('utf-8'))
+    return ''
     
-addr = ('',8888)
-server = HTTPServer(addr,RequestHandler)
-server.serve_forever()
+if __name__ == '__main__':
+    import signal
+    create_rotating_log('logs/miaomiao.log')
+    app.run(host='0.0.0.0', port=8888)
