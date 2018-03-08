@@ -1,5 +1,5 @@
 # coding:utf-8
-from flask import Flask    
+from flask import Flask, jsonify 
 from flask import request    
 from flask import make_response,Response
 import json
