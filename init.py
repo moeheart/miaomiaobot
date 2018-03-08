@@ -1,6 +1,6 @@
 import pymysql
 
-db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=5000 )
+db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=5000,charset='utf8')
 
 cursor = db.cursor()
 cursor.execute("DROP TABLE IF EXISTS playerinfo")

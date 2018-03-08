@@ -111,7 +111,7 @@ def handle():
     print(jdata)
     savedGroup = ['miaomiao测试群','【千衷】团本通知群']
     if ("group" in jdata.keys()) and (jdata["group"] in savedGroup): 
-        db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=5000 )
+        db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=5000,charset='utf8')
         cursor = db.cursor()
         res = re.search("^(.*)报名(.*)$", content)
         if res:
