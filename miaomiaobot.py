@@ -51,7 +51,9 @@ def handle():
     "黄鸡":"藏剑",
     "黄叽":"藏剑",
     "问水诀":"藏剑",
+    "问水":"藏剑",
     "山居剑意":"藏剑",
+    "山居":"藏剑",
     "霸刀":"霸刀",
     "北傲诀":"霸刀",
     "剑纯":"剑纯",
@@ -117,7 +119,15 @@ def handle():
         cursor = db.cursor()
         res = re.search("^(.*)报名(.*)$", content)
         if res:
-            if res.group(1) in nickname.keys():
+            if res.group(1) in ['傲雪','傲血','傲血战意']:
+                replycontent = '傲血还能进本？切T去吧'
+            elif res.group(1) in ['焚影','焚影圣诀']:
+                replycontent = '焚影还能进本？切T去吧'
+            elif res.group(1) in ['纯阳']:
+                replycontent = '剑纯还是气纯？'
+            elif res.group(1) in ['田螺','天罗诡道']:
+                replycontent = '田螺还能进本？下个版本见吧'
+            elif res.group(1) in nickname.keys():
                 type = nickname[res.group(1)]
                 sch = res.group(2)
                 sql = """SELECT sch, num from schedule WHERE sch = '%s'"""%sch
