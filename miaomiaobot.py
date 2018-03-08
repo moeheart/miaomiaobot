@@ -204,7 +204,7 @@ def handle():
                 cursor.execute(sql)          
                 
     if replycontent != '':
-        replydata = [{'reply':replycontent}]
+        replydata = {'reply':replycontent}
         return jsonify(replydata)
     
     return ''
