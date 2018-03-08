@@ -153,15 +153,13 @@ def handle():
             sql = """SELECT sch, name, time, num from schedule"""
             cursor.execute(sql)
             result = cursor.fetchall()
-            print(result)
             if result:
                 for line in result:
                     if (first):
                         first = 0
                     else:
                         replycontent = replycontent + '\n'
-                        replycontent = replycontent + '【%s】有 %s ，时间%s，已报名%d人'%(line[0],line[1],line[2],line[3])
-                print(replycontent)
+                    replycontent = replycontent + '【%s】有 %s ，时间%s，已报名%d人'%(line[0],line[1],line[2],line[3])
             else:
                 replycontent = '团长咸鱼去了，并没有本'
                 
@@ -204,6 +202,7 @@ def handle():
                 result = cursor.fetchall()
                 sql = """UPDATE schedule SET num = %d WHERE sch = %s"""%(result[0][0]+minus[sch], sch)
                 cursor.execute(sql)  
+        db.commit()
         db.close()  
     
     if replycontent != '':
