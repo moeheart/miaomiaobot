@@ -187,7 +187,6 @@ def handle():
             if result:
                 sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = %s"""%jdata["sender_id"]
                 cursor.execute(sql)
-                result = cursor.fetchall()
                 replycontent = '取消成功！江湖不见！'
                 minus = {}
                 for line in result:
