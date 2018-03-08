@@ -70,6 +70,8 @@ def handle():
     "大师":"大师",
     "易筋经":"大师",
     "秃子":"大师",
+    "秃驴":"大师",
+    "圣僧":"大师",
     "冰心":"冰心",
     "冰心诀":"冰心",
     "花间":"花间",
@@ -102,13 +104,17 @@ def handle():
     "洗髓":"洗髓",
     "洗髓经":"洗髓",
     "大师T":"洗髓",
+    "莫问":"莫问",
     "奶歌":"奶歌",
     "歌奶":"奶歌",
     "相知":"奶歌",
     "奶毒":"奶毒",
     "毒奶":"奶毒",
     "补天诀":"奶毒",
-    "补天":"奶毒"}
+    "补天":"奶毒",
+    "老板":"老板",
+    "外功":"外功",
+    "内功":"内功"}
     
     replycontent = ''
     
@@ -117,7 +123,7 @@ def handle():
     if ("group" in jdata.keys()) and (jdata["group"] in savedGroup): 
         db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=5000,charset='utf8')
         cursor = db.cursor()
-        res = re.search("^(.*)报名(.*)$", content)
+        res = re.search("^(.+)报名(.+)$", content)
         if res:
             if res.group(1) in ['傲雪','傲血','傲血战意']:
                 replycontent = '傲血还能进本？切T去吧'
@@ -125,6 +131,12 @@ def handle():
                 replycontent = '焚影还能进本？切T去吧'
             elif res.group(1) in ['纯阳']:
                 replycontent = '剑纯还是气纯？'
+            elif res.group(1) in ['长歌']:
+                replycontent = '莫问还是奶歌？'
+            elif res.group(1) in ['七秀','秀秀']:
+                replycontent = '冰心还是奶秀？'
+            elif res.group(1) in ['万花','花花']:
+                replycontent = '花间还是奶花？'
             elif res.group(1) in ['田螺','天罗诡道']:
                 replycontent = '田螺还能进本？下个版本见吧'
             elif res.group(1) in nickname.keys():
@@ -159,7 +171,7 @@ def handle():
                         cursor.execute(sql)
                         replycontent = '报名成功！id为%d'%id
                     
-        res = re.search("^有(什么本|本吗)？?$", content)
+        res = re.search("有(什么本|本吗|本嘛)", content)
         if res:
             first = 1
             sql = """SELECT sch, name, time, num from schedule"""
@@ -175,7 +187,7 @@ def handle():
             else:
                 replycontent = '团长咸鱼去了，并没有本'
                 
-        res = re.search("^(.*)报名情况$", content)
+        res = re.search("^(.+)报名情况$", content)
         if res:
             sch = res.group(1)
             sql = """SELECT sch, name, num from schedule WHERE sch = '%s'"""%sch
@@ -191,13 +203,11 @@ def handle():
                     replycontent = replycontent + '\n'
                     replycontent = replycontent + '%d %s: %s'%(line[0],line[1],line[2])
                     
-        res = re.search("^取消报名.*$", content)
+        res = re.search("取消报名", content)
         if res:
             p = random.randint(1,10)
-            if p == 1:
-                replycontent = '你脸太黑了！取消失败！'
-            elif p == 2:
-                replycontent = '你说取消就取消？'
+            if p <= 2:
+                replycontent = random.choice(["你脸太黑了，取消失败！","你说取消就取消？","放鸽子是不对的！","就不取消，你来打我呀"])
             else:
                 sql = """SELECT sch, id from playerinfo WHERE uid = '%s'"""%jdata["sender_id"]
                 cursor.execute(sql)
