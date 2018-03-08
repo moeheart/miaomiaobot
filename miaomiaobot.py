@@ -143,7 +143,7 @@ def handle():
                     elif flag == 1:
                         sql = """UPDATE playerinfo SET uid = '%s', name = '%s' WHERE sch = '%s' AND id = %d """%(jdata["sender_id"],jdata["sender"],sch,id)
                         cursor.execute(sql)
-                        sql = """UPDATE schedule SET num = %d WHERE sch = '%s'"""%(result0[0][1],sch)
+                        sql = """UPDATE schedule SET num = %d WHERE sch = '%s'"""%(result0[0][1]+1,sch)
                         cursor.execute(sql)
                         replycontent = '报名成功！id为%d'%id
                     
@@ -181,7 +181,6 @@ def handle():
                     
         res = re.search("^取消报名$", content)
         if res:
-            sch = res.group(1)
             sql = """SELECT sch, id from playerinfo WHERE uid = '%s'"""%jdata["sender_id"]
             cursor.execute(sql)
             result = cursor.fetchall()
