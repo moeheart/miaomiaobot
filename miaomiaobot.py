@@ -161,6 +161,7 @@ def handle():
                     else:
                         replycontent = replycontent + '\n'
                         replycontent = replycontent + '【%s】有 %s ，时间%s，已报名%d人'%(line[0],line[1],line[2],line[3])
+                print(replycontent)
             else:
                 replycontent = '团长咸鱼去了，并没有本'
                 
