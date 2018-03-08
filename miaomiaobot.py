@@ -64,13 +64,18 @@ def handle():
     "苍云T":"苍云",
     "铁骨衣":"苍云",
     "分山劲":"苍云",
+    "分山":"苍云",
     "惊羽":"惊羽",
     "鲸鱼":"惊羽",
     "惊羽诀":"惊羽",
     "大师":"大师",
     "易筋经":"大师",
+    "易筋":"大师",
     "秃子":"大师",
+    "和尚":"大师",
+    "少林":"大师",
     "秃驴":"大师",
+    "灯泡":"大师",
     "圣僧":"大师",
     "冰心":"冰心",
     "冰心诀":"冰心",
@@ -104,6 +109,8 @@ def handle():
     "洗髓":"洗髓",
     "洗髓经":"洗髓",
     "大师T":"洗髓",
+    "秃T":"洗髓",
+    "和尚T":"洗髓",
     "莫问":"莫问",
     "奶歌":"奶歌",
     "歌奶":"奶歌",
@@ -207,7 +214,7 @@ def handle():
                     replycontent = replycontent + '\n'
                     replycontent = replycontent + '%d %s: %s'%(line[0],line[1],line[2])
                     
-        res = re.search("取消报名", content)
+        res = re.search("^取消报名$", content)
         if res:
             p = random.randint(1,10)
             if p <= 2:
@@ -217,7 +224,7 @@ def handle():
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 if result:
-                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = %s"""%jdata["sender_id"]
+                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = '%s'"""%jdata["sender_id"]
                     cursor.execute(sql)
                     replycontent = '取消成功！江湖不见！'
                     minus = {}
@@ -232,6 +239,33 @@ def handle():
                     result = cursor.fetchall()
                     sql = """UPDATE schedule SET num = %d WHERE sch = '%s'"""%(result[0][0]+minus[sch], sch)
                     cursor.execute(sql)  
+                    
+        res = re.search("^取消报名(.+)$", content)
+        if res:
+            p = random.randint(1,10)
+            if p <= 2:
+                replycontent = random.choice(["你脸太黑了，取消失败！","你说取消就取消？","放鸽子是不对的！","就不取消，你来打我呀"])
+            else:
+                sql = """SELECT sch, id from playerinfo WHERE uid = '%s' AND sch = '%s'"""%(jdata["sender_id"],res.group(1))
+                cursor.execute(sql)
+                result = cursor.fetchall()
+                if result:
+                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = '%s' AND sch = '%s'"""%(jdata["sender_id"],res.group(1))
+                    cursor.execute(sql)
+                    replycontent = '取消成功！江湖不见！'
+                    minus = {}
+                    for line in result:
+                        if (line[0] not in minus.keys()):
+                            minus[line[0]] = -1
+                        else:
+                            minus[line[0]] -= 1
+                for sch in minus.keys():
+                    sql = """SELECT num from schedule WHERE sch = '%s'"""%sch
+                    cursor.execute(sql)
+                    result = cursor.fetchall()
+                    sql = """UPDATE schedule SET num = %d WHERE sch = '%s'"""%(result[0][0]+minus[sch], sch)
+                    cursor.execute(sql)  
+                    
         db.commit()
         db.close()  
     
