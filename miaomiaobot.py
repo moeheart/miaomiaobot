@@ -211,5 +211,4 @@ def handle():
     
 if __name__ == '__main__':
     import signal
-    create_rotating_log('logs/miaomiao.log')
     app.run(host='0.0.0.0', port=8888)
