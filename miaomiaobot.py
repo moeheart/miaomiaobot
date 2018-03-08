@@ -6,6 +6,7 @@ import json
 import read
 import re
 import pymysql
+import random
 
 app = Flask(__name__) 
 app.config['JSON_AS_ASCII'] = False
@@ -93,6 +94,7 @@ def handle():
     "天策T":"铁牢",
     "策T":"铁牢",
     "汪T":"铁牢",
+    "狗策":"铁牢",
     "狗T":"铁牢",
     "铁牢律":"铁牢",
     "洗髓":"洗髓",
@@ -179,27 +181,33 @@ def handle():
                     replycontent = replycontent + '\n'
                     replycontent = replycontent + '%d %s: %s'%(line[0],line[1],line[2])
                     
-        res = re.search("^取消报名$", content)
+        res = re.search("^取消报名.*$", content)
         if res:
-            sql = """SELECT sch, id from playerinfo WHERE uid = '%s'"""%jdata["sender_id"]
-            cursor.execute(sql)
-            result = cursor.fetchall()
-            if result:
-                sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = %s"""%jdata["sender_id"]
-                cursor.execute(sql)
-                replycontent = '取消成功！江湖不见！'
-                minus = {}
-                for line in result:
-                    if (line[0] not in minus.keys()):
-                        minus[line[0]] = -1
-                    else:
-                        minus[line[0]] -= 1
-            for sch in minus.keys():
-                sql = """SELECT num from schedule WHERE sch = '%s'"""%sch
+            p = random.randint(1,10)
+            if p == 1:
+                replycontent = '你脸太黑了！取消失败！'
+            elif p == 2:
+                replycontent = '你说取消就取消？'
+            else:
+                sql = """SELECT sch, id from playerinfo WHERE uid = '%s'"""%jdata["sender_id"]
                 cursor.execute(sql)
                 result = cursor.fetchall()
-                sql = """UPDATE schedule SET num = %d WHERE sch = '%s'"""%(result[0][0]+minus[sch], sch)
-                cursor.execute(sql)  
+                if result:
+                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = %s"""%jdata["sender_id"]
+                    cursor.execute(sql)
+                    replycontent = '取消成功！江湖不见！'
+                    minus = {}
+                    for line in result:
+                        if (line[0] not in minus.keys()):
+                            minus[line[0]] = -1
+                        else:
+                            minus[line[0]] -= 1
+                for sch in minus.keys():
+                    sql = """SELECT num from schedule WHERE sch = '%s'"""%sch
+                    cursor.execute(sql)
+                    result = cursor.fetchall()
+                    sql = """UPDATE schedule SET num = %d WHERE sch = '%s'"""%(result[0][0]+minus[sch], sch)
+                    cursor.execute(sql)  
         db.commit()
         db.close()  
     
