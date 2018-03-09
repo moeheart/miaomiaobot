@@ -327,6 +327,8 @@ def handle():
                 
         res = re.search("^结束 (.+)( (.+))?$", content)
         if res:  
+            print(res.group(3))
+            print(ownGroup[name])
             if res.group(3) is not None:
                 group = ownGroup[name][int(res.group(3))]
             else:
