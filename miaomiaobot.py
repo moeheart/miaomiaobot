@@ -367,7 +367,7 @@ def handle():
             cursor.execute(sql)
             replycontent = '更换配置成功！'
         
-        res = re.search("^新建配置 (.+):(.+)$")
+        res = re.search("^新建配置 (.+):(.+)$", content)
         if res: 
             title = res.group(1)
             str = res.group(2).split(' ')
