@@ -138,6 +138,12 @@ def handle():
     "莫问":"根骨",
     "奶歌":"奶妈",
     "奶毒":"奶妈",
+    "力道":"力道",
+    "身法":"身法",
+    "元气":"元气",
+    "根骨":"根骨",
+    "奶妈":"奶妈",
+    "T":"T",
     "老板":"老板",
     "外功":"外功",
     "内功":"内功"}
@@ -152,6 +158,9 @@ def handle():
     cursor = db.cursor()
     
     if ("group" in jdata.keys()) and (jdata["group"] in savedGroup): 
+        if content == "使用说明":
+            replycontent = "1.查询团本情况\n示例：有本吗\n2.报名团本\n示例：奶花报名周五\n3.查询报名情况\n示例：周五报名情况\n4.取消报名\n示例：取消报名周五\n5.查询小药/奇穴/宏\n示例：花间宏"
+    
         group = jdata["group"]
         res = re.search("^(.+)报名(.+)$", content)
         if res:
@@ -294,6 +303,8 @@ def handle():
     if (jdata["type"] == "friend_message") and ("sender" in jdata.keys()) and (jdata["sender"] in ownGroup.keys()):
         name = jdata["sender"]
         
+        if content == "使用说明":
+            replycontent = "1.新建团本\n示例：开团,周五,战兽山,13:00,战兽山参考配置\n2.关闭团本\n示例：结束,周五\n3.修改报名信息\n示例：报名,周五,22,左渭雨\n4.删除报名信息\n示例：取消,周五,22\n5.更换职业信息\n示例：更换,周五,22,奶花\n6.个性化配置(高级)\n示例：新建配置 战兽山2:分山 田螺 焚影 (以下省略)\n注意：如果管理多个群，可以在指令最后加逗号和数字，表示第几个群（默认为0）。"
         res = re.search("^开团,(.+),(.+),(.+),(.+)(,(.+))?$", content)
         if res:
             sql = """SELECT * FROM members WHERE title = '%s' AND (name = '%s' OR name = 'everyone')"""%(res.group(4),name)
@@ -301,8 +312,8 @@ def handle():
             result = cursor.fetchall()
             if result:
                 type = result[0]
-                if res.group(5) is not None:
-                    group = ownGroup[name][int(res.group(5))]
+                if res.group(6) is not None:
+                    group = ownGroup[name][int(res.group(6))]
                 else:
                     group = ownGroup[name][0]
                 sql = """INSERT INTO schedule VALUES ('%s', '%s', '%s', '%s', 0)"""%(res.group(1), res.group(2), res.group(3), group)
@@ -315,8 +326,8 @@ def handle():
                 
         res = re.search("^结束,(.+)(,(.+))?$", content)
         if res:  
-            if res.group(2) is not None:
-                group = ownGroup[name][int(res.group(2))]
+            if res.group(3) is not None:
+                group = ownGroup[name][int(res.group(3))]
             else:
                 group = ownGroup[name][0]
             sql = """DELETE FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
@@ -328,8 +339,8 @@ def handle():
         
         res = re.search("^报名,(.+),(.+),(.+)(,(.+))?$", content)
         if res: 
-            if res.group(4) is not None:
-                group = ownGroup[name][int(res.group(2))]
+            if res.group(5) is not None:
+                group = ownGroup[name][int(res.group(5))]
             else:
                 group = ownGroup[name][0]
             sql = """UPDATE schedule SET name = '%s' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(2), res.group(1), group, int(res.group(3)))
@@ -338,8 +349,8 @@ def handle():
             
         res = re.search("^取消,(.+),(.+)(,(.+))?$", content)
         if res: 
-            if res.group(3) is not None:
-                group = ownGroup[name][int(res.group(3))]
+            if res.group(4) is not None:
+                group = ownGroup[name][int(res.group(4))]
             else:
                 group = ownGroup[name][0]
             sql = """UPDATE schedule SET name = '' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
@@ -348,8 +359,8 @@ def handle():
             
         res = re.search("^更换,(.+),(.+)(,(.+))?$", content)
         if res: 
-            if res.group(3) is not None:
-                group = ownGroup[name][int(res.group(3))]
+            if res.group(4) is not None:
+                group = ownGroup[name][int(res.group(4))]
             else:
                 group = ownGroup[name][0]
             sql = """UPDATE schedule SET type = '' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
@@ -383,7 +394,7 @@ def handle():
     if True:
         p = random.randint(1,10)
         
-        res = re.search("^(.+)四?小药$", content)
+        res = re.search("^(.+)(四?)小药$", content)
         if res:
             if (res.group(1) in nickname.keys()):
                 type = nickname[res.group(1)]
