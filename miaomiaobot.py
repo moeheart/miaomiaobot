@@ -357,7 +357,7 @@ def handle():
             cursor.execute(sql)
             replycontent = '取消报名信息成功！'
             
-        res = re.search("^更换 (.+) (.+)( (.+))?$", content)
+        res = re.search("^更换 (.+) (.+) (.+)( (.+))?$", content)
         if res: 
             if res.group(4) is not None:
                 group = ownGroup[name][int(res.group(4))]
