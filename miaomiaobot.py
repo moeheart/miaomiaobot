@@ -141,10 +141,10 @@ def handle():
                     flag = 0
                     id = 0
                     others = ' '
-                    print(line[1])
-                    print(jdata["sender_id"])
                     if result:
                         for line in result:
+                            print(line[1])
+                            print(jdata["sender_id"])
                             if line[1] == '':
                                 flag = 1
                                 id = line[0]
@@ -262,4 +262,10 @@ def handle():
     
 if __name__ == '__main__':
     import signal
+    
+    
+    
+    
+    
+    
     app.run(host='0.0.0.0', port=8888)
