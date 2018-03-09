@@ -305,7 +305,7 @@ def handle():
         
         if content == "使用说明":
             replycontent = "1.新建团本\n示例：开团 周五 战兽山 13:00,战兽山参考配置\n2.关闭团本\n示例：结束 周五\n3.修改报名信息\n示例：报名 周五 左渭雨 22\n4.删除报名信息\n示例：取消 周五 22\n5.更换职业信息\n示例：更换 周五 洗髓 22\n6.个性化配置(高级)\n示例：新建配置 战兽山2:分山 田螺 焚影 (以下省略)\n注意：如果管理多个群，可以在指令最后加空格和数字，表示第几个群（默认为0）。"
-        res = re.search("^开团 (.+) (.+) (.+) (.+)( (.+))?$", content)
+        res = re.search("^开团 (.+) (.+) (.+) (.+?)( (.+))?$", content)
         if res:
             sql = """SELECT * FROM members WHERE title = '%s' AND (name = '%s' OR name = 'everyone')"""%(res.group(4),name)
             cursor.execute(sql)
@@ -325,10 +325,8 @@ def handle():
             else:
                 replycontent = '开团失败，请确认信息是否正确'
                 
-        res = re.search("^结束 (.+)( (.+))?$", content)
+        res = re.search("^结束 (.+?)( (.+))?$", content)
         if res:  
-            print(res.group(3))
-            print(ownGroup[name])
             if res.group(3) is not None:
                 group = ownGroup[name][int(res.group(3))]
             else:
@@ -340,7 +338,7 @@ def handle():
             cursor.execute(sql)
             replycontent = '团本已结束！'
         
-        res = re.search("^报名 (.+) (.+) (.+)( (.+))?$", content)
+        res = re.search("^报名 (.+) (.+) (.+?)( (.+))?$", content)
         if res: 
             if res.group(5) is not None:
                 group = ownGroup[name][int(res.group(5))]
@@ -350,7 +348,7 @@ def handle():
             cursor.execute(sql)
             replycontent = '修改报名信息成功！'
             
-        res = re.search("^取消 (.+) (.+)( (.+))?$", content)
+        res = re.search("^取消 (.+) (.+?)( (.+))?$", content)
         if res: 
             if res.group(4) is not None:
                 group = ownGroup[name][int(res.group(4))]
@@ -360,7 +358,7 @@ def handle():
             cursor.execute(sql)
             replycontent = '取消报名信息成功！'
             
-        res = re.search("^更换 (.+) (.+) (.+)( (.+))?$", content)
+        res = re.search("^更换 (.+) (.+) (.+?)( (.+))?$", content)
         if res: 
             if res.group(4) is not None:
                 group = ownGroup[name][int(res.group(4))]
