@@ -21,26 +21,8 @@ def handle():
     jdata = request.json
     content = jdata["content"]
     print(jdata["content"])
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    if content is None:
+        return ''
     
     
     nickname = {
@@ -159,6 +141,8 @@ def handle():
                     flag = 0
                     id = 0
                     others = ' '
+                    print(line[1])
+                    print(jdata["sender_id"])
                     if result:
                         for line in result:
                             if line[1] == '':
