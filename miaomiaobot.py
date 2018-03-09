@@ -384,6 +384,7 @@ def handle():
                     for i in range(25):
                         sql += ", '%s'"%typelist[i]
                     sql += ')'
+                    print(sql)
                     cursor.execute(sql)
                     replycontent = '新建配置成功！'
                 else:
