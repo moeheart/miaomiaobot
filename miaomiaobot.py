@@ -304,7 +304,7 @@ def handle():
         name = jdata["sender"]
         
         if content == "使用说明":
-            replycontent = "1.新建团本\n示例：开团 周五 战兽山 13:00,战兽山参考配置\n2.关闭团本\n示例：结束 周五\n3.修改报名信息\n示例：报名 周五 22 左渭雨\n4.删除报名信息\n示例：取消 周五 22\n5.更换职业信息\n示例：更换 周五 22 洗髓\n6.个性化配置(高级)\n示例：新建配置 战兽山2:分山 田螺 焚影 (以下省略)\n注意：如果管理多个群，可以在指令最后加空格和数字，表示第几个群（默认为0）。"
+            replycontent = "1.新建团本\n示例：开团 周五 战兽山 13:00,战兽山参考配置\n2.关闭团本\n示例：结束 周五\n3.修改报名信息\n示例：报名 周五 左渭雨 22\n4.删除报名信息\n示例：取消 周五 22\n5.更换职业信息\n示例：更换 周五 洗髓 22\n6.个性化配置(高级)\n示例：新建配置 战兽山2:分山 田螺 焚影 (以下省略)\n注意：如果管理多个群，可以在指令最后加空格和数字，表示第几个群（默认为0）。"
         res = re.search("^开团 (.+) (.+) (.+) (.+)( (.+))?$", content)
         if res:
             sql = """SELECT * FROM members WHERE title = '%s' AND (name = '%s' OR name = 'everyone')"""%(res.group(4),name)
@@ -343,7 +343,7 @@ def handle():
                 group = ownGroup[name][int(res.group(5))]
             else:
                 group = ownGroup[name][0]
-            sql = """UPDATE schedule SET name = '%s' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(2), res.group(1), group, int(res.group(3)))
+            sql = """UPDATE playerinfo SET name = '%s' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(2), res.group(1), group, int(res.group(3)))
             cursor.execute(sql)
             replycontent = '修改报名信息成功！'
             
@@ -353,7 +353,7 @@ def handle():
                 group = ownGroup[name][int(res.group(4))]
             else:
                 group = ownGroup[name][0]
-            sql = """UPDATE schedule SET name = '' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
+            sql = """UPDATE playerinfo SET name = '' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
             cursor.execute(sql)
             replycontent = '取消报名信息成功！'
             
@@ -363,7 +363,7 @@ def handle():
                 group = ownGroup[name][int(res.group(4))]
             else:
                 group = ownGroup[name][0]
-            sql = """UPDATE schedule SET type = '' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
+            sql = """UPDATE playerinfo SET type = '%s' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(2), res.group(1), group, int(res.group(3)))
             cursor.execute(sql)
             replycontent = '更换配置成功！'
         
