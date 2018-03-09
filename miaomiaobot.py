@@ -320,6 +320,7 @@ def handle():
                 cursor.execute(sql)
                 for i in range(1,26):
                     sql = """INSERT INTO playerinfo VALUES ('%s', %d, '%s', '', '%s', '')"""%(res.group(1), i, type[i+1], group)
+                    cursor.execute(sql)
                 replycontent = '开团成功！'
             else:
                 replycontent = '开团失败，请确认信息是否正确'
