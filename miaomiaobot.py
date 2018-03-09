@@ -151,7 +151,7 @@ def handle():
     replycontent = ''
     
     print(jdata)
-    savedGroup = ['miaomiao测试群','【千衷】团本通知群']
+    savedGroup = ['miaomiao测试群','【千衷】团本通知群', '《晚枫》']
     ownGroup = {'缥缈☆5.9维':['miaomiao测试群','【千衷】团本通知群','《晚枫》']}
     
     db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=5000,charset='utf8')
