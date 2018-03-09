@@ -143,10 +143,7 @@ def handle():
                     others = ' '
                     if result:
                         for line in result:
-                            print(line[1])
-                            print(jdata["sender_id"])
-                            print((line[1],jdata["sender_id"]))
-                            print(line[1] == jdata["sender_id"])
+                            print(line[1] == str(jdata["sender_id"]))
                             if line[1] == '':
                                 flag = 1
                                 id = line[0]
@@ -206,14 +203,14 @@ def handle():
             if p <= 2:
                 replycontent = random.choice(["你脸太黑了，取消失败！","你说取消就取消？","放鸽子是不对的！","就不取消，你来打我呀"])
             else:
-                sql = """SELECT sch, id from playerinfo WHERE uid = '%s'"""%jdata["sender_id"]
+                minus = {}
+                sql = """SELECT sch, id from playerinfo WHERE name = '%s'"""%jdata["sender"]
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 if result:
-                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = '%s'"""%jdata["sender_id"]
+                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE name = '%s'"""%jdata["sender"]
                     cursor.execute(sql)
                     replycontent = '取消成功！江湖不见！'
-                    minus = {}
                     for line in result:
                         if (line[0] not in minus.keys()):
                             minus[line[0]] = -1
@@ -232,12 +229,12 @@ def handle():
             if p <= 2:
                 replycontent = random.choice(["你脸太黑了，取消失败！","你说取消就取消？","放鸽子是不对的！","就不取消，你来打我呀"])
             else:
-                sql = """SELECT sch, id from playerinfo WHERE uid = '%s' AND sch = '%s'"""%(jdata["sender_id"],res.group(1))
+                minus = {}
+                sql = """SELECT sch, id from playerinfo WHERE name = '%s' AND sch = '%s'"""%(jdata["sender"],res.group(1))
                 cursor.execute(sql)
                 result = cursor.fetchall()
-                minus = {}
                 if result:
-                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = '%s' AND sch = '%s'"""%(jdata["sender_id"],res.group(1))
+                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE name = '%s' AND sch = '%s'"""%(jdata["sender"],res.group(1))
                     cursor.execute(sql)
                     replycontent = '取消成功！江湖不见！'
                     minus = {}
