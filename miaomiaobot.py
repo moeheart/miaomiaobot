@@ -220,11 +220,11 @@ def handle():
             if p <= 2:
                 replycontent = random.choice(["你脸太黑了，取消失败！","你说取消就取消？","放鸽子是不对的！","就不取消，你来打我呀"])
             else:
-                sql = """SELECT sch, id from playerinfo WHERE uid = '%s'"""%jdata["sender_id"]
+                sql = """SELECT sch, id from playerinfo WHERE uid = %s"""%jdata["sender_id"]
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 if result:
-                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = '%s'"""%jdata["sender_id"]
+                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = %s"""%jdata["sender_id"]
                     cursor.execute(sql)
                     replycontent = '取消成功！江湖不见！'
                     minus = {}
@@ -246,11 +246,12 @@ def handle():
             if p <= 2:
                 replycontent = random.choice(["你脸太黑了，取消失败！","你说取消就取消？","放鸽子是不对的！","就不取消，你来打我呀"])
             else:
-                sql = """SELECT sch, id from playerinfo WHERE uid = '%s' AND sch = '%s'"""%(jdata["sender_id"],res.group(1))
+                sql = """SELECT sch, id from playerinfo WHERE uid = %s AND sch = '%s'"""%(jdata["sender_id"],res.group(1))
                 cursor.execute(sql)
                 result = cursor.fetchall()
+                minus = {}
                 if result:
-                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = '%s' AND sch = '%s'"""%(jdata["sender_id"],res.group(1))
+                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE uid = %s AND sch = '%s'"""%(jdata["sender_id"],res.group(1))
                     cursor.execute(sql)
                     replycontent = '取消成功！江湖不见！'
                     minus = {}
