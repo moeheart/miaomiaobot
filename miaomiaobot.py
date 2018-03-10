@@ -386,11 +386,11 @@ def handle():
         res = re.search("^新建配置 (.+):(.+)$", content)
         if res: 
             title = res.group(1)
-            str = res.group(2).split(' ')
+            str2 = res.group(2).split(' ')
             typelist = []
-            if (len(str) == 25):
+            if (len(str2) == 25):
                 flag = 1
-                for type in str:
+                for type in str2:
                     if type not in nickname.keys():
                         flag = 0
                         break
