@@ -193,7 +193,7 @@ def handle():
                     others = ' '
                     if result:
                         for line in result:
-                            print(line[1] == str(jdata["sender_id"]))
+                            print(int(line[1]) == jdata["sender_id"])
                             if line[1] == '':
                                 flag = 1
                                 id = line[0]
