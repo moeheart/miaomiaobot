@@ -337,7 +337,7 @@ def handle():
             cursor.execute(sql)
             replycontent = '团本已结束！'
         
-        res = re.search("^报名 (.+) (.+) (.+?)( (.+))?$", content)
+        res = re.search("^报名 (.+?) (.+?) (.+?)( (.+))?$", content)
         if res: 
             if res.group(5) is not None:
                 group = ownGroup[name][int(res.group(5))]
