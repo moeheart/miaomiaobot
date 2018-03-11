@@ -208,13 +208,13 @@ def handle():
                                 others = others + line[2] + ' '
                     if flag == 0:
                         if others == ' ':
-                            if type = '傲雪':
+                            if type == '傲雪':
                                 replycontent = '傲血还能进本？切T去吧'
-                            elif type = '焚影':
+                            elif type == '焚影':
                                 replycontent = '焚影还能进本？切T去吧'
-                            elif type = '分山':
+                            elif type == '分山':
                                 replycontent = '分山还能进本？打wifi吧'
-                            elif type = '田螺':
+                            elif type == '田螺':
                                 replycontent = '田螺还能进本？下个版本见吧'
                             else:
                                 replycontent = '你确定你的职业能进本吗？'
