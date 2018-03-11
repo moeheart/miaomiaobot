@@ -170,7 +170,7 @@ def handle():
         if content == "使用说明":
             replycontent = "1.查询团本情况\n示例：有本吗\n2.报名团本\n示例：奶花报名周五\n3.查询报名情况\n示例：周五报名情况\n4.取消报名\n示例：取消报名周五\n5.查询小药/奇穴/宏\n示例：花间宏"
         group = jdata["group"]
-        group = groupLine[group]
+        group = groupLink[group]
         
         res = re.search("^(无敌)?(.+)报名(.+)$", content)
         if res:
