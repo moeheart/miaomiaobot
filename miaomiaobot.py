@@ -567,7 +567,7 @@ def handle():
                     replycontent = '盾宏\n/cast [nobuff:血怒|buff:血怒<2] 血怒\n/cast [tbuff:流血] 盾击\n/cast 盾压\n/cast 盾猛\n/cast 盾刀\n刀宏\n/cast [nobuff:血怒|buff:血怒<2] 血怒\n/cast [tbufftime:流血>20] 闪刀\n/cast [tnobuff:流血|tbufftime:流血<6] 斩刀\n/cast 劫刀'  
                 elif type == "傲雪":
                     replycontent = ''
-                if replycontent != '':
+                if replycontent != '' and replycontent != '奶妈还想用宏？想多了吧':
                     replycontent = '使用前请把符号（特别是大于/小于号）改为英文的！\n' + replycontent
     db.commit()
     db.close()  
