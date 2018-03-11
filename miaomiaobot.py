@@ -84,6 +84,9 @@ def handle():
     "明教":"明尊",
     "明教T":"明尊",
     "喵T":"明尊",
+    "傲雪":"傲血",
+    "傲血":"傲血",
+    "傲血战意":"傲血",
     "铁牢":"铁牢",
     "天策":"铁牢",
     "天策T":"铁牢",
@@ -119,6 +122,7 @@ def handle():
     "丐帮":"力道",
     "藏剑":"身法",
     "霸刀":"力道",
+    "傲血":"力道",
     "剑纯":"身法",
     "分山":"身法",
     "惊羽":"力道",
@@ -153,6 +157,11 @@ def handle():
     print(jdata)
     savedGroup = ['miaomiao测试群','【千衷】团本通知群', '《晚枫》']
     ownGroup = {'缥缈☆5.9维':['miaomiao测试群','【千衷】团本通知群','《晚枫》']}
+    groupLink = {
+    'miaomiao测试群':'miaomiao测试群',
+    '【千衷】团本通知群':'【千衷】团本通知群',
+    '《晚枫》':'【千衷】团本通知群'
+    }
     
     db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=5000,charset='utf8')
     cursor = db.cursor()
@@ -160,27 +169,22 @@ def handle():
     if ("group" in jdata.keys()) and (jdata["group"] in savedGroup): 
         if content == "使用说明":
             replycontent = "1.查询团本情况\n示例：有本吗\n2.报名团本\n示例：奶花报名周五\n3.查询报名情况\n示例：周五报名情况\n4.取消报名\n示例：取消报名周五\n5.查询小药/奇穴/宏\n示例：花间宏"
-    
         group = jdata["group"]
-        res = re.search("^(.+)报名(.+)$", content)
+        group = groupLine[group]
+        
+        res = re.search("^(无敌)?(.+)报名(.+)$", content)
         if res:
-            if res.group(1) in ['傲雪','傲血','傲血战意']:
-                replycontent = '傲血还能进本？切T去吧'
-            elif res.group(1) in ['焚影','焚影圣诀']:
-                replycontent = '焚影还能进本？切T去吧'
-            elif res.group(1) in ['纯阳']:
+            if res.group(2) in ['纯阳']:
                 replycontent = '剑纯还是气纯？'
-            elif res.group(1) in ['长歌']:
+            elif res.group(2) in ['长歌']:
                 replycontent = '莫问还是奶歌？'
-            elif res.group(1) in ['七秀','秀秀']:
+            elif res.group(2) in ['七秀','秀秀']:
                 replycontent = '冰心还是奶秀？'
-            elif res.group(1) in ['万花','花花']:
+            elif res.group(2) in ['万花','花花']:
                 replycontent = '花间还是奶花？'
-            elif res.group(1) in ['田螺','天罗诡道']:
-                replycontent = '田螺还能进本？下个版本见吧'
-            elif res.group(1) in nickname.keys():
-                type = nickname[res.group(1)]
-                sch = res.group(2)
+            elif res.group(2) in nickname.keys():
+                type = nickname[res.group(2)]
+                sch = res.group(3)
                 sql = """SELECT sch, num from schedule WHERE sch = '%s' AND mygroup = '%s'"""%(sch,group)
                 cursor.execute(sql)
                 result0 = cursor.fetchall()
@@ -204,7 +208,16 @@ def handle():
                                 others = others + line[2] + ' '
                     if flag == 0:
                         if others == ' ':
-                            replycontent = '你确定你的职业能进本吗？'
+                            if type = '傲雪':
+                                replycontent = '傲血还能进本？切T去吧'
+                            elif type = '焚影':
+                                replycontent = '焚影还能进本？切T去吧'
+                            elif type = '分山':
+                                replycontent = '分山还能进本？打wifi吧'
+                            elif type = '田螺':
+                                replycontent = '田螺还能进本？下个版本见吧'
+                            else:
+                                replycontent = '你确定你的职业能进本吗？'
                         else:
                             replycontent = '没有坑啦，去找%s打一架吧'%others
                     elif flag == 1:
@@ -373,6 +386,18 @@ def handle():
             cursor.execute(sql)  
             replycontent = '取消报名信息成功！'
             
+        res = re.search("^改名 (.+?) (.+?)( (.+))?$", content)
+        if res:
+            if res.group(4) is not None:
+                group = ownGroup[name][int(res.group(4))]
+            else:
+                group = ownGroup[name][0]
+            sql = """UPDATE schedule SET sch = '%s' WHERE sch = '%s'"""%(res.group(1), res.group(2))
+            cursor.execute(sql) 
+            sql = """UPDATE playerinfo SET sch = '%s' WHERE sch = '%s'"""%(res.group(1), res.group(2))
+            cursor.execute(sql) 
+            replycontent = '更改团名成功！'
+            
         res = re.search("^更换 (.+?) (.+?) (.+?)( (.+))?$", content)
         if res: 
             if res.group(4) is not None:
@@ -539,8 +564,11 @@ def handle():
                 elif type == "田螺":
                     replycontent = '/cast 千机变\n/cast 连弩形态\n/cast 攻击\n/cast [tnobuff:化血] 天女散花\n/cast 鬼斧神工\n/cast 心无旁骛\n/cast 天绝地灭\n/cast 暴雨梨花针\n/cast 蚀肌弹'
                 elif type == "分山":
-                    replycontent = '盾宏\n/cast [nobuff:血怒|buff:血怒<2] 血怒\n/cast [tbuff:流血] 盾击\n/cast 盾压\n/cast 盾猛\n/cast 盾刀\n刀宏\n/cast [nobuff:血怒|buff:血怒<2] 血怒\n/cast [tbufftime:流血>20] 闪刀\n/cast [tnobuff:流血|tbufftime:流血<6] 斩刀\n/cast 劫刀'            
-                    
+                    replycontent = '盾宏\n/cast [nobuff:血怒|buff:血怒<2] 血怒\n/cast [tbuff:流血] 盾击\n/cast 盾压\n/cast 盾猛\n/cast 盾刀\n刀宏\n/cast [nobuff:血怒|buff:血怒<2] 血怒\n/cast [tbufftime:流血>20] 闪刀\n/cast [tnobuff:流血|tbufftime:流血<6] 斩刀\n/cast 劫刀'  
+                elif type == "傲雪":
+                    replycontent = ''
+                if replycontent != '':
+                    replycontent = '使用前请把符号（特别是大于/小于号）改为英文的！\n' + replycontent
     db.commit()
     db.close()  
     
@@ -552,10 +580,6 @@ def handle():
     
 if __name__ == '__main__':
     import signal
-    
-    
-    
-    
     
     
     app.run(host='0.0.0.0', port=8888)
