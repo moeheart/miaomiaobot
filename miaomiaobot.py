@@ -23,14 +23,14 @@ def updateid():
     html = response.read()
     jsonf = json.loads(html.decode())
     for line in jsonf:  
-        app.adminid[line.name] = line.id
+        app.adminid[line["name"]] = line["id"]
     
     app.groupid = {}
     response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/get_group_basic_info')
     html = response.read()
     jsonf = json.loads(html)
     for line in jsonf:  
-        app.groupid[line.name] = line.id
+        app.groupid[line["name"]] = line["id"]
     
 @app.route('/', methods=['POST'])    
 def handle():    
