@@ -17,6 +17,21 @@ def Response_headers(content):
     resp.headers['Access-Control-Allow-Origin'] = '*'    
     return resp
     
+def updateid():
+    app.adminid = {}
+    response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/get_friend_info')
+    html = response.read()
+    jsonf = json.loads(html)
+    for line in jsonf:  
+        app.adminid{line.name} = line.id
+    
+    app.groupid = {}
+    response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/get_group_basic_info')
+    html = response.read()
+    jsonf = json.loads(html)
+    for line in jsonf:  
+        app.groupid{line.name} = line.id
+    
 @app.route('/', methods=['POST'])    
 def handle():    
     jdata = request.json
@@ -160,7 +175,7 @@ def handle():
     savedGroup = app.savedGroup
     groupLink = app.groupLink
     
-    db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=5000,charset='utf8')
+    db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=3306,charset='utf8')
     cursor = db.cursor()
     
     if ("group" in jdata.keys()) and (jdata["group"] in savedGroup): 
@@ -309,7 +324,7 @@ def handle():
                     sql = """UPDATE schedule SET num = %d WHERE sch = '%s' AND mygroup = '%s'"""%(result[0][0]+minus[sch], sch, group)
                     cursor.execute(sql)  
 
-    if (jdata["type"] == "friend_message") and ("sender" in jdata.keys()) and (jdata["sender"] in ownGroup.keys()):
+    if ("sender" in jdata.keys()) and (jdata["sender"] in ownGroup.keys()) and (jdata["id"] == app.adminid[jdata["sender"]]):
         name = jdata["sender"]
         
         if content == "使用说明":
@@ -332,7 +347,7 @@ def handle():
                     cursor.execute(sql)
                 replycontent = '开团成功！'
             else:
-                replycontent = '开团失败，请确认信息是否正确'
+                replycontent = '开团失败，请确认配置信息是否正确'
                 
         res = re.search("^结束 (.+?)( (.+))?$", content)
         if res:  
@@ -340,12 +355,18 @@ def handle():
                 group = ownGroup[name][int(res.group(3))]
             else:
                 group = ownGroup[name][0]
-            sql = """DELETE FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
+            sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
             cursor.execute(sql)
+            rr = cursor.fetchall()
+            if rr:
+                sql = """DELETE FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
+                cursor.execute(sql)
 
-            sql = """DELETE FROM playerinfo WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
-            cursor.execute(sql)
-            replycontent = '团本已结束！'
+                sql = """DELETE FROM playerinfo WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
+                cursor.execute(sql)
+                replycontent = '团本已结束！'
+            else:
+                replycontent = '结束失败，该团本不存在！'
         
         res = re.search("^报名 (.+?) (.+?) (.+?)( (.+))?$", content)
         if res: 
@@ -353,17 +374,24 @@ def handle():
                 group = ownGroup[name][int(res.group(5))]
             else:
                 group = ownGroup[name][0]
-            sql = """UPDATE playerinfo SET name = '%s' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(2), res.group(1), group, int(res.group(3)))
+                
+            sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(3)))
             cursor.execute(sql)
-            
-            sql = """SELECT id from playerinfo WHERE name != '' AND sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
-            cursor.execute(sql)
-            result = cursor.fetchall()
-            num = len(result)
-            
-            sql = """UPDATE schedule SET num = %d WHERE sch = '%s' AND mygroup = '%s'"""%(num, res.group(1), group)
-            cursor.execute(sql)  
-            replycontent = '修改报名信息成功！'
+            rr = cursor.fetchall()
+            if rr:
+                sql = """UPDATE playerinfo SET name = '%s' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(2), res.group(1), group, int(res.group(3)))
+                cursor.execute(sql)
+                
+                sql = """SELECT id from playerinfo WHERE name != '' AND sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
+                cursor.execute(sql)
+                result = cursor.fetchall()
+                num = len(result)
+                
+                sql = """UPDATE schedule SET num = %d WHERE sch = '%s' AND mygroup = '%s'"""%(num, res.group(1), group)
+                cursor.execute(sql)  
+                replycontent = '修改报名信息成功！'
+            else:
+                replycontent = '手动报名失败，该团本/id不存在！'
             
         res = re.search("^取消 (.+?) (.+?)( (.+))?$", content)
         if res: 
@@ -371,17 +399,24 @@ def handle():
                 group = ownGroup[name][int(res.group(4))]
             else:
                 group = ownGroup[name][0]
-            sql = """UPDATE playerinfo SET name = '' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
+                
+            sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
             cursor.execute(sql)
-            
-            sql = """SELECT id from playerinfo WHERE name != '' AND sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
-            cursor.execute(sql)
-            result = cursor.fetchall()
-            num = len(result)
-            
-            sql = """UPDATE schedule SET num = %d WHERE sch = '%s' AND mygroup = '%s'"""%(num, res.group(1), group)
-            cursor.execute(sql)  
-            replycontent = '取消报名信息成功！'
+            rr = cursor.fetchall()
+            if rr:
+                sql = """UPDATE playerinfo SET name = '' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
+                cursor.execute(sql)
+                
+                sql = """SELECT id from playerinfo WHERE name != '' AND sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
+                cursor.execute(sql)
+                result = cursor.fetchall()
+                num = len(result)
+                
+                sql = """UPDATE schedule SET num = %d WHERE sch = '%s' AND mygroup = '%s'"""%(num, res.group(1), group)
+                cursor.execute(sql)  
+                replycontent = '取消报名信息成功！'
+            else:
+                replycontent = "取消报名失败，该团本/id不存在！"
             
         res = re.search("^改名 (.+?) (.+?)( (.+))?$", content)
         if res:
@@ -389,21 +424,71 @@ def handle():
                 group = ownGroup[name][int(res.group(4))]
             else:
                 group = ownGroup[name][0]
-            sql = """UPDATE schedule SET sch = '%s' WHERE sch = '%s'"""%(res.group(1), res.group(2))
-            cursor.execute(sql) 
-            sql = """UPDATE playerinfo SET sch = '%s' WHERE sch = '%s'"""%(res.group(1), res.group(2))
-            cursor.execute(sql) 
-            replycontent = '更改团名成功！'
+            sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
+            cursor.execute(sql)
+            rr = cursor.fetchall()
+            if rr:
+                sql = """UPDATE schedule SET sch = '%s' WHERE sch = '%s'"""%(res.group(2), res.group(1))
+                cursor.execute(sql) 
+                sql = """UPDATE playerinfo SET sch = '%s' WHERE sch = '%s'"""%(res.group(2), res.group(1))
+                cursor.execute(sql) 
+                replycontent = '更改团名成功！'
+            else:
+                replycontent = '更改团名失败，该团本不存在！'
+            
+        res = re.search("^改内容 (.+?) (.+?)( (.+))?$", content)
+        if res:
+            if res.group(4) is not None:
+                group = ownGroup[name][int(res.group(4))]
+            else:
+                group = ownGroup[name][0]
+            sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
+            cursor.execute(sql)
+            rr = cursor.fetchall()
+            if rr:
+                sql = """UPDATE schedule SET name = '%s' WHERE sch = '%s'"""%(res.group(2), res.group(1))
+                cursor.execute(sql) 
+                sql = """UPDATE playerinfo SET name = '%s' WHERE sch = '%s'"""%(res.group(2), res.group(1))
+                cursor.execute(sql) 
+                replycontent = '更改内容成功！'
+            else:
+                replycontent = '更改内容失败，该团本不存在！'
+            
+        res = re.search("^改时间 (.+?) (.+?)( (.+))?$", content)
+        if res:
+            if res.group(4) is not None:
+                group = ownGroup[name][int(res.group(4))]
+            else:
+                group = ownGroup[name][0]
+            sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
+            cursor.execute(sql)
+            rr = cursor.fetchall()
+            if rr:
+                sql = """UPDATE schedule SET time = '%s' WHERE sch = '%s'"""%(res.group(2), res.group(1))
+                cursor.execute(sql) 
+                sql = """UPDATE playerinfo SET time = '%s' WHERE sch = '%s'"""%(res.group(2), res.group(1))
+                cursor.execute(sql) 
+                replycontent = '更改时间成功！'
+            else:
+                replycontent = '更改时间失败，该团本不存在！'
             
         res = re.search("^更换 (.+?) (.+?) (.+?)( (.+))?$", content)
         if res: 
             if res.group(4) is not None:
                 group = ownGroup[name][int(res.group(4))]
             else:
-                group = ownGroup[name][0]
-            sql = """UPDATE playerinfo SET type = '%s' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(2), res.group(1), group, int(res.group(3)))
+                group = ownGroup[name][0]   
+            sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(3)))
             cursor.execute(sql)
-            replycontent = '更换配置成功！'
+            rr = cursor.fetchall()
+            if (res.group(2) not in nickname.keys()):
+                replycontent = '更换配置失败，该职业不存在！'
+            elif rr:
+                sql = """UPDATE playerinfo SET type = '%s' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(2), res.group(1), group, int(res.group(3)))
+                cursor.execute(sql)
+                replycontent = '更换配置成功！'
+            else:
+                replycontent = '更换配置失败，该团本/id不存在！'
         
         res = re.search("^新建配置 (.+):(.+)$", content)
         if res: 
@@ -593,38 +678,7 @@ if __name__ == '__main__':
     '【千衷】团本通知群':'【千衷】团本通知群',
     '《晚枫》':'【千衷】团本通知群'
     }
-    
-    app.adminid = {}
-    response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/get_friend_info)
-    html = response.read()
-    jsonf = json.loads(html)
-    for line in jsonf:  
-        app.adminid{line.name} = line.id
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    updateid()
     
     
     app.run(host='0.0.0.0', port=8888, debug=True)
