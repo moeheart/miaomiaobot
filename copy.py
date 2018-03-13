@@ -6,6 +6,10 @@ cursor = db.cursor()
 db2 = pymysql.connect("127.0.0.1","root","testpwd1","test",port=3306,charset='utf8')
 cursor2 = db2.cursor()
 
+cursor2.execute("DROP TABLE IF EXISTS playerinfo")
+cursor2.execute("DROP TABLE IF EXISTS schedule")
+cursor2.execute("DROP TABLE IF EXISTS members")
+
 sql = """CREATE TABLE schedule (
          sch CHAR(64),
          name CHAR(64),
@@ -61,14 +65,14 @@ for line in result:
     cursor2.execute(sql)
     
 sql = """SELECT * FROM playerinfo"""
-cursor2.execute(sql)
+cursor.execute(sql)
 result = cursor.fetchall()
 for line in result:
     sql = """INSERT INTO playerinfo VALUES ('%s', %d, '%s', '%s', '%s', '%s')"""%line
     cursor2.execute(sql)
 
 sql = """SELECT * FROM members"""
-cursor2.execute(sql)
+cursor.execute(sql)
 result = cursor.fetchall()
 for line in result:
     sql = """INSERT INTO members VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')"""%line
