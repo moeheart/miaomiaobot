@@ -35,6 +35,7 @@ def updateid():
         app.adminlist += [line["id"]]
         
     print(app.adminid)
+    print(app.adminlist)
     
 @app.route('/', methods=['POST'])    
 def handle():    
@@ -327,7 +328,7 @@ def handle():
                     result = cursor.fetchall()
                     sql = """UPDATE schedule SET num = %d WHERE sch = '%s' AND mygroup = '%s'"""%(result[0][0]+minus[sch], sch, group)
                     cursor.execute(sql)  
-
+    
     if ("sender" in jdata.keys()) and (jdata["sender"] in ownGroup.keys()) and (jdata["sender_id"] in app.adminlist):
         name = jdata["sender"]
         
@@ -694,16 +695,25 @@ def handle():
     
 if __name__ == '__main__':
     import signal
-    app.ownGroup = {'缥缈☆5.9维':['miaomiao测试群','【千衷】团本通知群','《晚枫》']}
+    
+    app.info = {
+      'miaomiao测试群':{'owner':['缥缈☆5.9维',], 'help':1, 'base': 'miaomiao测试群'},
+      '【千衷】团本通知群':{'owner':['缥缈☆5.9维',], 'help':1, 'base': '【千衷】团本通知群'},
+      '《晚枫》':{'owner':['缥缈☆5.9维',], 'help':1, 'base': '【千衷】团本通知群'},
+    }
+    app.ownGroup = {}
+    app.groupLink = {}
+    for group in app.info.keys():
+        for owner in app.info[group]['owner']:
+            if owner not in app.ownGroup.keys():
+                app.ownGroup[owner] = [group,]
+            else:
+                app.ownGroup[owner] += [group]
+        app.groupLink[group] = app.info[group]['base']
+    #app.ownGroup = {'缥缈☆5.9维':['miaomiao测试群','【千衷】团本通知群','《晚枫》']}
     app.savedGroup = []
     for admin in app.ownGroup.keys():
         app.savedGroup += app.ownGroup[admin]
-    app.groupLink = {
-    'miaomiao测试群':'miaomiao测试群',
-    '【千衷】团本通知群':'【千衷】团本通知群',
-    '《晚枫》':'【千衷】团本通知群'
-    }
     updateid()
-    
     
     app.run(host='0.0.0.0', port=8888, debug=True)
