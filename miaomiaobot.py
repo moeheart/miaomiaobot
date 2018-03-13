@@ -36,6 +36,7 @@ def updateid():
         
     print(app.adminid)
     print(app.adminlist)
+    print(app.ownGroup)
     
 @app.route('/', methods=['POST'])    
 def handle():    
@@ -329,7 +330,7 @@ def handle():
                     sql = """UPDATE schedule SET num = %d WHERE sch = '%s' AND mygroup = '%s'"""%(result[0][0]+minus[sch], sch, group)
                     cursor.execute(sql)  
     
-    if ("sender" in jdata.keys()) and (jdata["sender"] in ownGroup.keys()) and (jdata["sender_id"] in app.adminlist):
+    if ("sender" in jdata.keys()) and (jdata["sender_id"] in app.adminlist):
         name = jdata["sender"]
         
         if content == "团长使用说明":
