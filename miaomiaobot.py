@@ -21,7 +21,7 @@ def updateid():
     app.adminid = {}
     response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/get_friend_info')
     html = response.read()
-    jsonf = json.loads(html)
+    jsonf = json.loads(html.decode())
     for line in jsonf:  
         app.adminid[line.name] = line.id
     
