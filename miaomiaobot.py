@@ -18,6 +18,7 @@ def Response_headers(content):
     return resp
     
 def updateid():
+    app.adminlist = []
     app.adminid = {}
     response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/get_friend_info')
     html = response.read()
@@ -31,6 +32,7 @@ def updateid():
     jsonf = json.loads(html.decode())
     for line in jsonf:  
         app.groupid[line["name"]] = line["id"]
+        app.adminlist += line["id"]
         
     print(app.adminid)
     
@@ -326,10 +328,10 @@ def handle():
                     sql = """UPDATE schedule SET num = %d WHERE sch = '%s' AND mygroup = '%s'"""%(result[0][0]+minus[sch], sch, group)
                     cursor.execute(sql)  
 
-    if ("sender" in jdata.keys()) and (jdata["sender"] in ownGroup.keys()) and (jdata["sender_id"] == app.adminid[jdata["sender"]]):
+    if ("sender" in jdata.keys()) and (jdata["sender"] in ownGroup.keys()) and (jdata["sender_id"] in app.adminlist):
         name = jdata["sender"]
         
-        if content == "使用说明":
+        if content == "团长使用说明":
             replycontent = "1.新建团本\n示例：开团 周五 战兽山 13:00 战兽山参考配置\n2.关闭团本\n示例：结束 周五\n3.修改报名信息\n示例：报名 周五 左渭雨 22\n4.删除报名信息\n示例：取消 周五 22\n5.更换职业信息\n示例：更换 周五 洗髓 22\n6.个性化配置(高级)\n示例：新建配置 战兽山2:分山 田螺 焚影 (以下省略)\n注意：如果管理多个群，可以在指令最后加空格和数字，表示第几个群（默认为0）。"
         res = re.search("^开团 (.+?) (.+?) (.+?) (.+?)( (.+))?$", content)
         if res:
@@ -340,6 +342,8 @@ def handle():
                 type = result[0]
                 if res.group(6) is not None:
                     group = ownGroup[name][int(res.group(6))]
+                elif ("group" in jdata.keys()):
+                    group = jdata["group"]
                 else:
                     group = ownGroup[name][0]
                 sql = """INSERT INTO schedule VALUES ('%s', '%s', '%s', '%s', 0)"""%(res.group(1), res.group(2), res.group(3), group)
@@ -355,6 +359,8 @@ def handle():
         if res:  
             if res.group(3) is not None:
                 group = ownGroup[name][int(res.group(3))]
+            elif ("group" in jdata.keys()):
+                group = jdata["group"]
             else:
                 group = ownGroup[name][0]
             sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
@@ -374,7 +380,10 @@ def handle():
         if res: 
             if res.group(5) is not None:
                 group = ownGroup[name][int(res.group(5))]
+            elif ("group" in jdata.keys()):
+                group = jdata["group"]
             else:
+
                 group = ownGroup[name][0]
                 
             sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(3)))
@@ -399,7 +408,10 @@ def handle():
         if res: 
             if res.group(4) is not None:
                 group = ownGroup[name][int(res.group(4))]
+            elif ("group" in jdata.keys()):
+                group = jdata["group"]
             else:
+
                 group = ownGroup[name][0]
                 
             sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
@@ -424,6 +436,8 @@ def handle():
         if res:
             if res.group(4) is not None:
                 group = ownGroup[name][int(res.group(4))]
+            elif ("group" in jdata.keys()):
+                group = jdata["group"]
             else:
                 group = ownGroup[name][0]
             sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
@@ -442,7 +456,10 @@ def handle():
         if res:
             if res.group(4) is not None:
                 group = ownGroup[name][int(res.group(4))]
+            elif ("group" in jdata.keys()):
+                group = jdata["group"]
             else:
+
                 group = ownGroup[name][0]
             sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
             cursor.execute(sql)
@@ -460,7 +477,10 @@ def handle():
         if res:
             if res.group(4) is not None:
                 group = ownGroup[name][int(res.group(4))]
+            elif ("group" in jdata.keys()):
+                group = jdata["group"]
             else:
+
                 group = ownGroup[name][0]
             sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
             cursor.execute(sql)
@@ -478,7 +498,10 @@ def handle():
         if res: 
             if res.group(4) is not None:
                 group = ownGroup[name][int(res.group(4))]
+            elif ("group" in jdata.keys()):
+                group = jdata["group"]
             else:
+
                 group = ownGroup[name][0]   
             sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(3)))
             cursor.execute(sql)
