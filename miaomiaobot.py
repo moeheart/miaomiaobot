@@ -326,7 +326,7 @@ def handle():
                     sql = """UPDATE schedule SET num = %d WHERE sch = '%s' AND mygroup = '%s'"""%(result[0][0]+minus[sch], sch, group)
                     cursor.execute(sql)  
 
-    if ("sender" in jdata.keys()) and (jdata["sender"] in ownGroup.keys()) and (jdata["id"] == app.adminid[jdata["sender"]]):
+    if ("sender" in jdata.keys()) and (jdata["sender"] in ownGroup.keys()) and (jdata["sender_id"] == app.adminid[jdata["sender"]]):
         name = jdata["sender"]
         
         if content == "使用说明":
