@@ -388,7 +388,7 @@ def handle():
 
                 group = ownGroup[name][0]
                 
-            sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(3)))
+            sql = """SELECT * FROM playerinfo WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(3)))
             cursor.execute(sql)
             rr = cursor.fetchall()
             if rr:
@@ -416,7 +416,7 @@ def handle():
 
                 group = ownGroup[name][0]
                 
-            sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
+            sql = """SELECT * FROM playerinfo WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
             cursor.execute(sql)
             rr = cursor.fetchall()
             if rr:
@@ -504,7 +504,7 @@ def handle():
                 group = jdata["group"]
             else:
                 group = ownGroup[name][0]   
-            sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
+            sql = """SELECT * FROM playerinfo WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(3)))
             cursor.execute(sql)
             rr = cursor.fetchall()
             if (res.group(2) not in nickname.keys()):
