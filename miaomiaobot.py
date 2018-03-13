@@ -671,7 +671,7 @@ if __name__ == '__main__':
     import signal
     app.ownGroup = {'缥缈☆5.9维':['miaomiao测试群','【千衷】团本通知群','《晚枫》']}
     app.savedGroup = []
-    for admin in ownGroup.keys():
+    for admin in app.ownGroup.keys():
         app.savedGroup += app.ownGroup[admin]
     app.groupLink = {
     'miaomiao测试群':'miaomiao测试群',
