@@ -3,8 +3,8 @@ import pymysql
 db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=5000,charset='utf8')
 cursor = db.cursor()
 
-db2 = pymysql.connect("127.0.0.1","root","testpwd1","test",port=5000,charset='utf8')
-cursor2 = db.cursor()
+db2 = pymysql.connect("127.0.0.1","root","testpwd1","test",port=3306,charset='utf8')
+cursor2 = db2.cursor()
 
 sql = """CREATE TABLE schedule (
          sch CHAR(64),
