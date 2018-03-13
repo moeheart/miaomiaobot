@@ -58,7 +58,7 @@ sql = """CREATE TABLE members (
 cursor2.execute(sql)
 
 sql = """SELECT * FROM schedule"""
-cursor2.execute(sql)
+cursor.execute(sql)
 result = cursor.fetchall()
 for line in result:
     sql = """INSERT INTO schedule VALUES ('%s', '%s', '%s', '%s', %d)"""%line
