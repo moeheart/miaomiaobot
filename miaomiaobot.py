@@ -31,6 +31,8 @@ def updateid():
     jsonf = json.loads(html.decode())
     for line in jsonf:  
         app.groupid[line["name"]] = line["id"]
+        
+    print(app.adminid)
     
 @app.route('/', methods=['POST'])    
 def handle():    
