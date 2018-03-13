@@ -175,7 +175,7 @@ def handle():
     savedGroup = app.savedGroup
     groupLink = app.groupLink
     
-    db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=3306,charset='utf8')
+    db = pymysql.connect("127.0.0.1","root","testpwd1","test",port=3306,charset='utf8')
     cursor = db.cursor()
     
     if ("group" in jdata.keys()) and (jdata["group"] in savedGroup): 
