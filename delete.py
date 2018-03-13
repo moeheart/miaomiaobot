@@ -9,7 +9,6 @@ cursor.execute(sql)
 
 sql = """DELETE FROM playerinfo WHERE sch = '周五'"""
 cursor.execute(sql)
-
         
 db.commit()
 db.close()

@@ -7,6 +7,7 @@ import read
 import re
 import pymysql
 import random
+import urllib.request
 
 app = Flask(__name__) 
 app.config['JSON_AS_ASCII'] = False
@@ -155,13 +156,9 @@ def handle():
     replycontent = ''
     
     print(jdata)
-    savedGroup = ['miaomiao测试群','【千衷】团本通知群', '《晚枫》']
-    ownGroup = {'缥缈☆5.9维':['miaomiao测试群','【千衷】团本通知群','《晚枫》']}
-    groupLink = {
-    'miaomiao测试群':'miaomiao测试群',
-    '【千衷】团本通知群':'【千衷】团本通知群',
-    '《晚枫》':'【千衷】团本通知群'
-    }
+    ownGroup = app.ownGroup
+    savedGroup = app.savedGroup
+    groupLink = app.groupLink
     
     db = pymysql.connect("172.21.0.10","root","testpwd1","test",port=5000,charset='utf8')
     cursor = db.cursor()
@@ -515,25 +512,31 @@ def handle():
         if res:
             if (res.group(1) in nickname.keys()):
                 type = nickname[res.group(1)]
+                trick = 0
                 if type == "花间":
                     if p <= 2:
                         replycontent = '/cast 开花\n/cast [nobuff光合作用]光照\n/cast [nobuff: 开水]浇开水\n/cast [nobuff: 肥料]施肥\n/cast [buff:O2&H2O]光合作用\n/cast [buff: 开花]成熟\n/cast [buff: 成熟]吃人'
+                        trick = 1
                     else:
                         replycontent = '/cast [tnobuff:兰摧玉折] 兰摧玉折\n/cast 水月无间\n/cast [tnobuff:兰摧玉折&tnobuff:钟林毓秀] 钟林毓秀\n/cast [tnobuff:商阳指] 商阳指\n/fcast 玉石俱焚\n/cast 快雪时晴'
                 elif type == "奶花":
                     replycontent = '奶妈还想用宏？想多了吧'
+                    trick = 1
                 elif type == "冰心":
                     replycontent = '/cast 繁音急节\n/cast 剑破虚空\n/cast 玳弦急曲'
                 elif type == "奶秀":
                     replycontent = '奶妈还想用宏？想多了吧'
+                    trick = 1
                 elif type == "毒经":
                     replycontent = '/cast 蛊虫献祭\n/cast 灵蛇引\n/fcast 幻击\n/cast 攻击\n/cast 蛊虫狂暴\n/cast 灵蛊\n/cast 百足\n/cast [tnobuff:蛇影] 蛇影\n/cast 蟾啸\n/cast 蝎心'
                 elif type == "奶毒":
                     replycontent = '奶妈还想用宏？想多了吧'
+                    trick = 1
                 elif type == "莫问":
                     replycontent = '宏1:\n/fcast [tbufftime:角>13&tbufftime:角<15&nobuff:孤影化双&nobuff:清绝影歌] 清绝影歌\n/cast 剑·羽\n/cast 剑·宫\n宏2:\n/fcast 阳春白雪\n/cast [tnobuff:商] 商\n/cast [tnobuff:角] 角\n/fcast [tbufftime:商<6&tbufftime:商>4] 宫\n/cast 徵\n/cast 羽'
                 elif type == "奶歌":
                     replycontent = '奶妈还想用宏？想多了吧'
+                    trick = 1
                 elif type == "剑纯":
                     replycontent = '输出：\n/cast [nobuff:碎星辰] 碎星辰\n/cast [qidian>8] 无我无剑\n/cast 八荒归元\n/cast 三环套月\n行天道辅助：\n/cast [nobuff:行天道] 生太极\n/cast [nobuff:行天道] 吞日月\n/cast 行天道'
                 elif type == "气纯":
@@ -553,6 +556,7 @@ def handle():
                 elif type == "惊羽":
                     if p<=2:
                         replycontent = '/cast 下潜\n/cast 上浮\n/cast 喷水'
+                        trick = 1
                     else:
                         replycontent = '/cast [tnobuff:穿心] 穿心弩\n/cast [buff:追命无声|bufftime:侵火动旌>13] 追命箭\n/cast [buff:追命无声] 心无旁骛\n/cast 夺魄箭'
                 elif type == "铁骨":
@@ -565,9 +569,9 @@ def handle():
                     replycontent = '/cast 千机变\n/cast 连弩形态\n/cast 攻击\n/cast [tnobuff:化血] 天女散花\n/cast 鬼斧神工\n/cast 心无旁骛\n/cast 天绝地灭\n/cast 暴雨梨花针\n/cast 蚀肌弹'
                 elif type == "分山":
                     replycontent = '盾宏\n/cast [nobuff:血怒|buff:血怒<2] 血怒\n/cast [tbuff:流血] 盾击\n/cast 盾压\n/cast 盾猛\n/cast 盾刀\n刀宏\n/cast [nobuff:血怒|buff:血怒<2] 血怒\n/cast [tbufftime:流血>20] 闪刀\n/cast [tnobuff:流血|tbufftime:流血<6] 斩刀\n/cast 劫刀'  
-                elif type == "傲雪":
+                elif type == "傲血":
                     replycontent = ''
-                if replycontent != '' and replycontent != '奶妈还想用宏？想多了吧':
+                if replycontent != '' and trick == 0:
                     replycontent = '使用前请把符号（特别是大于/小于号）改为英文的！\n' + replycontent
     db.commit()
     db.close()  
@@ -580,6 +584,47 @@ def handle():
     
 if __name__ == '__main__':
     import signal
+    app.ownGroup = {'缥缈☆5.9维':['miaomiao测试群','【千衷】团本通知群','《晚枫》']}
+    app.savedGroup = []
+    for admin in ownGroup.keys():
+        app.savedGroup += app.ownGroup[admin]
+    app.groupLink = {
+    'miaomiao测试群':'miaomiao测试群',
+    '【千衷】团本通知群':'【千衷】团本通知群',
+    '《晚枫》':'【千衷】团本通知群'
+    }
+    
+    app.adminid = {}
+    response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/get_friend_info)
+    html = response.read()
+    jsonf = json.loads(html)
+    for line in jsonf:  
+        app.adminid{line.name} = line.id
     
     
-    app.run(host='0.0.0.0', port=8888)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    app.run(host='0.0.0.0', port=8888, debug=True)
