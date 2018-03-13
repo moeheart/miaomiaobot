@@ -28,7 +28,7 @@ def updateid():
     app.groupid = {}
     response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/get_group_basic_info')
     html = response.read()
-    jsonf = json.loads(html)
+    jsonf = json.loads(html.decode())
     for line in jsonf:  
         app.groupid[line["name"]] = line["id"]
     
