@@ -71,7 +71,7 @@ def setnickname():
     "T":["T","t"],
     "老板":["老板",],
     "外功":["外功",],
-    "内功":["内功",],}
+    "内功":["内功",],
     }
     nickname = {}
     for x in nicknamelist.keys():
@@ -703,4 +703,4 @@ if __name__ == '__main__':
     updateid()
     setnickname()
     
-    app.run(host='0.0.0.0', port=8888, debug=False, threaded=True)
+    app.run(host='0.0.0.0', port=8888, debug=True)
