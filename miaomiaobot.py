@@ -554,7 +554,7 @@ def handle():
             else:
                 replycontent = '新建配置失败，请确认信息是否正确'
         
-    if False:
+    if True:
         p = random.randint(1,10)
         
         res = re.search("^(.+)(四?)小药$", content)
