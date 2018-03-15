@@ -44,7 +44,7 @@ def handle():
     content = jdata["content"]
     if content is None:
         return ''
-    if content[0:10] != "@miaomiao "
+    if content[0:10] != "@miaomiao ":
         return ''
     content = content[10:]
     print(content)
