@@ -42,9 +42,12 @@ def updateid():
 def handle():    
     jdata = request.json
     content = jdata["content"]
-    print(jdata["content"])
     if content is None:
         return ''
+    if content[0:10] != "@miaomiao "
+        return ''
+    content = content[10:]
+    print(content)
     
     nickname = {
     "丐帮":"丐帮",
@@ -194,7 +197,7 @@ def handle():
         group = jdata["group"]
         group = groupLink[group]
         
-        res = re.search("^(无敌)?(.+)报名(.+)$", content)
+        res = re.search("^(无敌)?(.+)报名(.+?)( id(.+))?$", content)
         if res:
             if res.group(2) in ['纯阳']:
                 replycontent = '剑纯还是气纯？'
@@ -207,6 +210,9 @@ def handle():
             elif res.group(2) in nickname.keys():
                 type = nickname[res.group(2)]
                 sch = res.group(3)
+                gameid = ''
+                if res.group(5) is not None:
+                    gameid = res.group(5)
                 sql = """SELECT sch, num from schedule WHERE sch = '%s' AND mygroup = '%s'"""%(sch,group)
                 cursor.execute(sql)
                 result0 = cursor.fetchall()
@@ -243,7 +249,7 @@ def handle():
                         else:
                             replycontent = '没有坑啦，去找%s打一架吧'%others
                     elif flag == 1:
-                        sql = """UPDATE playerinfo SET uid = '%s', name = '%s' WHERE sch = '%s' AND id = %d AND mygroup = '%s'"""%(jdata["sender_id"],jdata["sender"],sch,id,group)
+                        sql = """UPDATE playerinfo SET uid = '%s', name = '%s', gameid = '%s' WHERE sch = '%s' AND id = %d AND mygroup = '%s'"""%(jdata["sender_id"],jdata["sender"],gameid,sch,id,group)
                         cursor.execute(sql)
                         sql = """UPDATE schedule SET num = %d WHERE sch = '%s' AND mygroup = '%s'"""%(result0[0][1]+1,sch,group)
                         cursor.execute(sql)
@@ -273,13 +279,15 @@ def handle():
             result0 = cursor.fetchall()
             if (result0):
                 first = 1
-                sql = """SELECT id, type, name from playerinfo WHERE sch = '%s' AND mygroup = '%s'"""%(sch,group)
+                sql = """SELECT id, type, name, gameid from playerinfo WHERE sch = '%s' AND mygroup = '%s'"""%(sch,group)
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 replycontent = '%s %s已报名%d人'%(sch,result0[0][1],result0[0][2])
                 for line in result:
                     replycontent = replycontent + '\n'
                     replycontent = replycontent + '%d %s: %s'%(line[0],line[1],line[2])
+                    if line[3] != '':
+                        replycontent = replycontent + 'id%s'%line[3]
                     
         res = re.search("^取消报名$", content)
         if res:
@@ -691,6 +699,12 @@ def handle():
     db.commit()
     db.close()  
     
+    if len(replycontent) > 30:
+        if app.info[jdata["group"]]['time'] > int(jdata['time']) - 120000:
+            replycontent = ''
+        app.info[jdata["group"]]['time'] = int(jdata['time'])
+        print(int(jdata['time']))
+    
     if replycontent != '':
         replydata = {'reply':replycontent}
         return jsonify(replydata)
@@ -701,26 +715,26 @@ if __name__ == '__main__':
     import signal
     
     app.info = {
-      'miaomiao测试群':{'owner':['缥缈☆5.9维','眼眸印温柔','陈必过','韩景萱','无劫','长生如我-','楚🐳',], 'help':1, 'base': 'miaomiao测试群'},
-      '【千衷】团本通知群':{'owner':['缥缈☆5.9维',], 'help':1, 'base': '【千衷】团本通知群'},
-      '《晚枫》':{'owner':['缥缈☆5.9维',], 'help':1, 'base': '【千衷】团本通知群'},
-      '【赤繁】妈耶饭里有砂':{'owner':['眼眸印温柔','陈必过'], 'help':1, 'base': '【赤繁】妈耶饭里有砂'},
-      '我们的家~啾啾啾':{'owner':['韩景萱',], 'help':1, 'base': '我们的家~啾啾啾'},
-      '师门炸金花':{'owner':['无劫',], 'help':1, 'base': '师门炸金花'},
-      '颜值扛把子落花飞雪':{'owner':['长生如我-',], 'help':1, 'base': '颜值扛把子落花飞雪'},
-      '君不弃大型相亲现场':{'owner':['楚🐳',], 'help':1, 'base': '君不弃大型相亲现场'},
-      '【烟雨阁】咸鱼养老群':{'owner':['Teemo',], 'help':1, 'base': '【烟雨阁】咸鱼养老群'},
-      '【懒】弱智儿童教学班':{'owner':['Mistletoe',], 'help':1, 'base': '【懒】弱智儿童教学班'},
-      '萌新基佬群':{'owner':['  沐七。',], 'help':1, 'base': '萌新基佬群'},
-      '卧龙':{'owner':['非语',], 'help':1, 'base': '卧龙'},
-      '浮雪老年过气团':{'owner':['平庸的暧昧。',], 'help':1, 'base': '浮雪老年过气团'},
-      '高颜值咸鱼群':{'owner':['雨文',], 'help':1, 'base': '高颜值咸鱼群'},
-      '团名是啥！':{'owner':['番茄茄茄茄茄',], 'help':1, 'base': '团名是啥！'},
-      '女神保护基地':{'owner':['蛋叉蜀黍~',], 'help':1, 'base': '女神保护基地'},
-      '青芒散尽又经年':{'owner':['温粥与你立黄昏',], 'help':1, 'base': '青芒散尽又经年'},
-      '咕咕咕':{'owner':['舟舟',], 'help':1, 'base': '咕咕咕'},
-      '【丫儿呦】今晚有团吗':{'owner':['叶、狸',], 'help':1, 'base': '【丫儿呦】今晚有团吗'},
-      '【天问】加班团':{'owner':['剑挽歌',], 'help':1, 'base': '【天问】加班团'},
+      'miaomiao测试群':{'owner':['缥缈☆5.9维','眼眸印温柔','陈必过','韩景萱','无劫','长生如我-','楚🐳',], 'help':1, 'base': 'miaomiao测试群', 'time':0},
+      '【千衷】团本通知群':{'owner':['缥缈☆5.9维',], 'help':1, 'base': '【千衷】团本通知群', 'time':0},
+      '《晚枫》':{'owner':['缥缈☆5.9维',], 'help':1, 'base': '【千衷】团本通知群', 'time':0},
+      '【赤繁】妈耶饭里有砂':{'owner':['眼眸印温柔','陈必过'], 'help':1, 'base': '【赤繁】妈耶饭里有砂', 'time':0},
+      '我们的家~啾啾啾':{'owner':['韩景萱',], 'help':1, 'base': '我们的家~啾啾啾', 'time':0},
+      '师门炸金花':{'owner':['无劫',], 'help':1, 'base': '师门炸金花', 'time':0},
+      '颜值扛把子落花飞雪':{'owner':['长生如我-',], 'help':1, 'base': '颜值扛把子落花飞雪', 'time':0},
+      '君不弃大型相亲现场':{'owner':['楚🐳',], 'help':1, 'base': '君不弃大型相亲现场', 'time':0},
+      '【烟雨阁】咸鱼养老群':{'owner':['Teemo',], 'help':1, 'base': '【烟雨阁】咸鱼养老群', 'time':0},
+      '【懒】弱智儿童教学班':{'owner':['Mistletoe',], 'help':1, 'base': '【懒】弱智儿童教学班', 'time':0},
+      '萌新基佬群':{'owner':['  沐七。',], 'help':1, 'base': '萌新基佬群', 'time':0},
+      '卧龙':{'owner':['非语',], 'help':1, 'base': '卧龙', 'time':0},
+      '浮雪老年过气团':{'owner':['平庸的暧昧。',], 'help':1, 'base': '浮雪老年过气团', 'time':0},
+      '高颜值咸鱼群':{'owner':['雨文',], 'help':1, 'base': '高颜值咸鱼群', 'time':0},
+      '团名是啥！':{'owner':['番茄茄茄茄茄',], 'help':1, 'base': '团名是啥！', 'time':0},
+      '女神保护基地':{'owner':['蛋叉蜀黍~',], 'help':1, 'base': '女神保护基地', 'time':0},
+      '青芒散尽又经年':{'owner':['温粥与你立黄昏',], 'help':1, 'base': '青芒散尽又经年', 'time':0},
+      '咕咕咕':{'owner':['舟舟',], 'help':1, 'base': '咕咕咕', 'time':0},
+      '【丫儿呦】今晚有团吗':{'owner':['叶、狸',], 'help':1, 'base': '【丫儿呦】今晚有团吗', 'time':0},
+      '【天问】加班团':{'owner':['剑挽歌',], 'help':1, 'base': '【天问】加班团', 'time':0},
     }
     app.ownGroup = {}
     app.groupLink = {}
