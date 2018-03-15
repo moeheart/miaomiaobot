@@ -702,7 +702,8 @@ def handle():
     if len(replycontent) > 30:
         if app.info[jdata["group"]]['time'] > int(jdata['time']) - 120000:
             replycontent = ''
-        app.info[jdata["group"]]['time'] = int(jdata['time'])
+        else:
+            app.info[jdata["group"]]['time'] = int(jdata['time'])
         print(int(jdata['time']))
     
     if replycontent != '':
@@ -735,6 +736,7 @@ if __name__ == '__main__':
       '咕咕咕':{'owner':['舟舟',], 'help':1, 'base': '咕咕咕', 'time':0},
       '【丫儿呦】今晚有团吗':{'owner':['叶、狸',], 'help':1, 'base': '【丫儿呦】今晚有团吗', 'time':0},
       '【天问】加班团':{'owner':['剑挽歌',], 'help':1, 'base': '【天问】加班团', 'time':0},
+      '【春辞秋折】副本群':{'owner':['大文小舍院。',], 'help':1, 'base': '【春辞秋折】副本群', 'time':0},
     }
     app.ownGroup = {}
     app.groupLink = {}
