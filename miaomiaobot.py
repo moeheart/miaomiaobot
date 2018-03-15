@@ -225,7 +225,7 @@ def handle():
                     others = ' '
                     if result:
                         for line in result:
-                            if line[1] == '':
+                            if line[2] == '':
                                 flag = 1
                                 id = line[0]
                                 break
@@ -286,7 +286,7 @@ def handle():
                 for line in result:
                     replycontent = replycontent + '\n'
                     replycontent = replycontent + '%d %s: %s'%(line[0],line[1],line[2])
-                    if line[3] != '':
+                    if (line[3] is not None) and (line[3] != ''):
                         replycontent = replycontent + 'id%s'%line[3]
                     
         res = re.search("^取消报名$", content)
