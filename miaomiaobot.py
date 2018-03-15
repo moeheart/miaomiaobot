@@ -86,7 +86,7 @@ def handle():
     if content is None:
         return ''
     if content[0:10] != "@miaomiao ":
-        return ''
+        #return ''
     else:
         content = content[10:]
     print(content)
