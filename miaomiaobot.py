@@ -363,7 +363,7 @@ def handle():
                 sql = """INSERT INTO schedule VALUES ('%s', '%s', '%s', '%s', 0)"""%(res.group(1), res.group(2), res.group(3), group)
                 cursor.execute(sql)
                 for i in range(1,26):
-                    sql = """INSERT INTO playerinfo VALUES ('%s', %d, '%s', '', '%s', '')"""%(res.group(1), i, type[i+1], group)
+                    sql = """INSERT INTO playerinfo VALUES ('%s', %d, '%s', '', '%s', '', '')"""%(res.group(1), i, type[i+1], group)
                     cursor.execute(sql)
                 replycontent = '开团成功！'
             else:
