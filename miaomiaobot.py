@@ -700,7 +700,7 @@ def handle():
     db.close()  
     
     if len(replycontent) > 30:
-        if app.info[jdata["group"]]['time'] > int(jdata['time']) - 120000:
+        if app.info[jdata["group"]]['time'] > int(jdata['time']) - 120:
             replycontent = ''
         else:
             app.info[jdata["group"]]['time'] = int(jdata['time'])
