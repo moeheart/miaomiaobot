@@ -313,7 +313,7 @@ def handle():
                     app.overallcd = time + 300
                     app.info[jdata["group"]]['cd'] = time + 10800
                     for group in app.info.keys():
-                        if group['help'] == 1:
+                        if app.info[group]['help'] == 1:
                             response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/send_group_message?id=%s&content=%s&async=1'%(group['id'],urllib.parse.quote(message)))
 
         if content == "团长使用说明":
