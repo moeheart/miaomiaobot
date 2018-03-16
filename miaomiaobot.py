@@ -315,7 +315,8 @@ def handle():
                     for group in info.keys():
                         if group['help'] == 1:
                             response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/send_group_message?id=%s&content=%s&async=1'%(group['id'],quote(message))
-        if (content == "团长使用说明"):
+        
+        if (content in ["团长使用说明",]):
             replycontent = "1.新建团本\n示例：开团 周五 战兽山 13:00 战兽山参考配置\n2.关闭团本\n示例：结束 周五\n3.修改报名信息\n示例：报名 周五 左渭雨 22\n4.删除报名信息\n示例：取消 周五 22\n5.更换职业信息\n示例：更换 周五 洗髓 22\n6.更改团名/内容/时间\n示例：改名 周五 周六\n7.个性化配置(高级)\n示例：新建配置 战兽山2:分山 田螺 焚影 (以下省略)\n注意：如果管理多个群，可以在指令最后加空格和数字，表示第几个群（默认为0）。"
 
         res = re.search("^开团 (.+?) (.+?) (.+?) (.+?)( (.+))?$", content)
