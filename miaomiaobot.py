@@ -512,8 +512,8 @@ def handle():
             title = res.group(1)
             sql = """SELECT * FROM members WHERE title = '%s' AND name = '%s'"""%(title, name)
             cursor.execute(sql)
-            res = cursor.fetchall()
-            if res:
+            res2 = cursor.fetchall()
+            if res2:
                 replycontent = '该名称已存在，请换一个试试'
             else:
                 str2 = res.group(2).split(' ')
