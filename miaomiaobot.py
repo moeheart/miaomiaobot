@@ -38,6 +38,7 @@ def updateid():
     print(app.admininfo)
     print(app.adminlist)
     print(app.ownGroup)
+    print(app.info["【千衷】团本通知群"])
     
 def setnickname():
     nicknamelist = {
@@ -305,13 +306,13 @@ def handle():
                 message = res.group(1)
                 if len(message) > 50:
                     replycontent = "消息过长，请控制在50个字符以内~"
-                elif app.info[jdata["group"]]['cd'] > time:
+                elif app.info[jdata["group"]]['ultcd'] > time:
                     replycontent = "该群的发起互助处于cd中，剩余%d秒"%(app.info[jdata["group"]]['cd'] - time)
                 elif app.overallcd > time:
                     replycontent = "发起互助处于公共cd中，剩余%d秒"%(app.overallcd - time)
                 else:
                     app.overallcd = time + 300
-                    app.info[jdata["group"]]['cd'] = time + 10800
+                    app.info[jdata["group"]]['ultcd'] = time + 10800
                     for group in app.info.keys():
                         if app.info[group]['help'] == 1:
                             print(group)
