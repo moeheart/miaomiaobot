@@ -299,7 +299,7 @@ def handle():
     if ("sender" in jdata.keys()) and (jdata["sender_id"] in app.adminlist):
         name = jdata["sender"]
         time = int(jdata['time'])
-        if (app.info[jdata["group"]]["help"] == 1):
+        if "group" in jdata.keys() and (app.info[jdata["group"]]["help"] == 1):
             res = re.search("^互助 (.+)$", content)
             if res:
                 message = res.group(1)
@@ -737,6 +737,7 @@ if __name__ == '__main__':
       '小欢乐':{'owner':['一晌贪欢'], 'help':0, 'smoke':0, 'base': '小欢乐'},
       '醉月开荒大队':{'owner':['Teemo'], 'help':0, 'smoke':0, 'base': '醉月开荒大队'},
       '亢龙戒网瘾中心':{'owner':['喵门提督'], 'help':0, 'smoke':0, 'base': '亢龙戒网瘾中心'},
+      '亢龙戒网瘾中心':{'owner':['陆发花'], 'help':0, 'smoke':0, 'base': '亢龙戒网瘾中心'},
     }
     app.overallcd = 0
     for x in app.info.keys():
