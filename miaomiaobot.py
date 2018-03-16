@@ -52,7 +52,7 @@ def setnickname():
     "田螺":["天罗","田螺","天罗诡道"],
     "大师":["大师","易筋经","易筋","秃子","和尚","少林","秃驴","灯泡","圣僧","易经"],
     "冰心":["冰小心","冰心","冰心诀","七秀"],
-    "花间":["花小间","花间游","万花"],
+    "花间":["花小间","花间游","万花","花间"],
     "毒经":["毒小经","毒经","五毒"],
     "莫问":["莫小问","莫问","长歌"],
     "奶花":["离小经","奶花","花奶","离经易道","离经"],
@@ -306,7 +306,7 @@ def handle():
                 if len(message) > 50:
                     replycontent = "消息过长，请控制在50个字符以内~"
                 elif app.info[jdata["group"]]['ultcd'] > time:
-                    replycontent = "该群的发起互助处于cd中，剩余%d秒"%(app.info[jdata["group"]]['cd'] - time)
+                    replycontent = "该群的发起互助处于cd中，剩余%d秒"%(app.info[jdata["group"]]['ultcd'] - time)
                 elif app.overallcd > time:
                     replycontent = "发起互助处于公共cd中，剩余%d秒"%(app.overallcd - time)
                 else:
