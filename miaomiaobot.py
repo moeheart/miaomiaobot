@@ -2,6 +2,7 @@
 from flask import Flask, jsonify 
 from flask import request    
 from flask import make_response,Response
+from urllib import quote
 import json
 import read
 import re
@@ -19,48 +20,48 @@ def Response_headers(content):
     
 def updateid():
     app.adminlist = []
-    app.adminid = {}
+    app.admininfo = {}
     response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/get_friend_info')
     html = response.read()
     jsonf = json.loads(html.decode())
     for line in jsonf:  
-        app.adminid[line["name"]] = line["id"]
+        app.admininfo[line["name"]] = {'id': line["id"]}
         app.adminlist += [line["id"]]
     
-    app.groupid = {}
     response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/get_group_basic_info')
     html = response.read()
     jsonf = json.loads(html.decode())
     for line in jsonf:  
-        app.groupid[line["name"]] = line["id"]
+        if line["id"] in app.info.keys():
+            app.info[line["name"]]['id'] = line["id"]
         
-    print(app.adminid)
+    print(app.admininfo)
     print(app.adminlist)
     print(app.ownGroup)
     
 def setnickname():
     nicknamelist = {
     "丐帮":["丐帮","丐丐","笑尘诀"],
-    "藏剑":["藏剑","黄鸡","黄叽","问水诀","问水","藏剑","山居剑意","山居","黄焖鸡"],
-    "霸刀":["霸刀","北傲诀"],
+    "藏剑":["问小水","山小居","藏剑","黄鸡","黄叽","问水诀","问水","藏剑","山居剑意","山居","黄焖鸡"],
+    "霸刀":["霸小刀","霸刀","北傲诀"],
     "剑纯":["剑纯","剑咩","太虚剑意"],
     "气纯":["气纯","气咩","紫霞功"],
-    "苍云":["苍云","铁骨","苍云T","铁骨衣","苍云wifi","wifi"],
+    "苍云":["苍云","铁骨","苍云T","苍云t","铁骨衣","苍云wifi","wifi"],
     "分山":["分山劲","分山","岔劲"],
-    "惊羽":["惊羽","鲸鱼","惊羽诀"],
+    "惊羽":["惊小羽","惊羽","鲸鱼","惊羽诀"],
     "田螺":["天罗","田螺","天罗诡道"],
-    "大师":["大师","易筋经","易筋","秃子","和尚","少林","秃驴","灯泡","圣僧"],
-    "冰心":["冰心","冰心诀","七秀"],
-    "花间":["花间","花间游","万花"],
-    "毒经":["毒经","五毒"],
-    "莫问":["莫问","长歌"],
-    "奶花":["奶花","花奶","离经易道","离经"],
-    "奶秀":["奶秀","秀奶","云裳心经","云裳"],
-    "奶毒":["奶毒","毒奶","补天诀","补天"],
-    "奶歌":["奶歌","歌奶","相知","奶鸽","鸽奶","乳鸽"],
-    "焚影":["焚影","焚影圣诀"],
+    "大师":["大师","易筋经","易筋","秃子","和尚","少林","秃驴","灯泡","圣僧","易经"],
+    "冰心":["冰小心","冰心","冰心诀","七秀"],
+    "花间":["花小间","花间游","万花"],
+    "毒经":["毒小经","毒经","五毒"],
+    "莫问":["莫小问","莫问","长歌"],
+    "奶花":["离小经","奶花","花奶","离经易道","离经"],
+    "奶秀":["云小裳","奶秀","秀奶","云裳心经","云裳"],
+    "奶毒":["补天","奶毒","毒奶","补天诀","补天"],
+    "奶歌":["相小知","奶歌","歌奶","相知","奶鸽","鸽奶","乳鸽"],
+    "焚影":["焚小影","焚影","焚影圣诀"],
     "明尊":["明尊","明尊琉璃体","明教","明教T","明教t","喵T","喵t"],
-    "傲血":["傲雪","傲血","傲血战意"],
+    "傲血":["傲小雪","傲雪","傲血","傲血战意"],
     "铁牢":["铁牢","铁牢律","天策","天策T","天策t","策T","策t","狗T","狗t"],
     "洗髓":["洗髓","洗髓经","大师T","大师t","秃T","秃t","和尚T","和尚t"],
     "力道":["力道",],
@@ -142,6 +143,13 @@ def handle():
         group = jdata["group"]
         group = groupLink[group]
         
+        if (app.info[jdata["group"]]["smoke"] == 1):
+            res = re.search("傻逼|弱智|你妈死了", content)
+            if res:
+                replycontent = "请文明发言，和谐用语！"    
+                replydata = {'reply':replycontent, 'shutup': 1, "shutup_time": 180}
+                return jsonify(replydata)
+                
         res = re.search("^(无敌)?(.+)报名(.+?)( id(.+))?$", content)
         if res:
             if res.group(2) in ['纯阳']:
@@ -198,7 +206,7 @@ def handle():
                         cursor.execute(sql)
                         sql = """UPDATE schedule SET num = %d WHERE sch = '%s' AND mygroup = '%s'"""%(result0[0][1]+1,sch,group)
                         cursor.execute(sql)
-                        replycontent = '报名成功！id为%d'%id
+                        replycontent = '%s 报名成功！id为%d'%(type,id)
                     
         res = re.search("有(什么本|本吗|本嘛)", content)
         if res:
@@ -241,13 +249,14 @@ def handle():
                 replycontent = random.choice(["你脸太黑了，取消失败！","你说取消就取消？","放鸽子是不对的！","就不取消，你来打我呀"])
             else:
                 minus = {}
-                sql = """SELECT sch, id from playerinfo WHERE name = '%s' AND mygroup = '%s'"""%(jdata["sender"],group)
+                sql = """SELECT sch, id, type from playerinfo WHERE name = '%s' AND mygroup = '%s'"""%(jdata["sender"],group)
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 if result:
-                    sql = """UPDATE playerinfo SET uid = '', name = '' WHERE name = '%s' AND mygroup = '%s'"""%(jdata["sender"],group)
+                    type = result[0][2]
+                    sql = """UPDATE playerinfo SET uid = '', name = '', gameid = '' WHERE name = '%s' AND mygroup = '%s'"""%(jdata["sender"],group)
                     cursor.execute(sql)
-                    replycontent = '取消成功！江湖不见！'
+                    replycontent = '%s 取消成功！江湖不见！'%type
                     for line in result:
                         if (line[0] not in minus.keys()):
                             minus[line[0]] = -1
@@ -289,31 +298,54 @@ def handle():
     
     if ("sender" in jdata.keys()) and (jdata["sender_id"] in app.adminlist):
         name = jdata["sender"]
+        time = time = int(jdata['time'])
+        if (app.info[jdata["group"]]["help"] == 1):
+            res = re.search("^互助 (.+)$", content)
+            if res:
+                message = res.group(1)
+                if len(message) > 50:
+                    replycontent = "消息过长，请控制在50个字符以内~"
+                elif app.info[jdata["group"]]['cd'] > time:
+                    replycontent = "该群的发起互助处于cd中，剩余%d秒"%(time - app.info[jdata["group"]]['cd'])
+                elif app.overallcd > time:
+                    replycontent = "发起互助处于公共cd中，剩余%d秒"%(time - overallcd)
+                else:
+                    app.overallcd = time + 300
+                    app.info[jdata["group"]['cd']] = time + 10800
+                    for group in info.keys():
+                        if group['help'] == 1:
+                            response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/send_group_message?id=%s&content=%s&async=1'%(group['id'],quote(message))
         
         if content == "团长使用说明":
             replycontent = "1.新建团本\n示例：开团 周五 战兽山 13:00 战兽山参考配置\n2.关闭团本\n示例：结束 周五\n3.修改报名信息\n示例：报名 周五 左渭雨 22\n4.删除报名信息\n示例：取消 周五 22\n5.更换职业信息\n示例：更换 周五 洗髓 22\n6.更改团名/内容/时间\n示例：改名 周五 周六\n7.个性化配置(高级)\n示例：新建配置 战兽山2:分山 田螺 焚影 (以下省略)\n注意：如果管理多个群，可以在指令最后加空格和数字，表示第几个群（默认为0）。"
         res = re.search("^开团 (.+?) (.+?) (.+?) (.+?)( (.+))?$", content)
         if res:
-            sql = """SELECT * FROM members WHERE title = '%s' AND (name = '%s' OR name = 'everyone')"""%(res.group(4),name)
+            if res.group(6) is not None:
+                group = ownGroup[name][int(res.group(6))]
+            elif ("group" in jdata.keys()):
+                group = jdata["group"]
+            else:
+                group = ownGroup[name][0]
+            sql = """SELECT * FROM schedule WHERE sch = '%s' AND mygroup = '%s'"""%(res.group(1),group)
             cursor.execute(sql)
             result = cursor.fetchall()
             if result:
-                type = result[0]
-                if res.group(6) is not None:
-                    group = ownGroup[name][int(res.group(6))]
-                elif ("group" in jdata.keys()):
-                    group = jdata["group"]
-                else:
-                    group = ownGroup[name][0]
-                sql = """INSERT INTO schedule VALUES ('%s', '%s', '%s', '%s', 0)"""%(res.group(1), res.group(2), res.group(3), group)
-                cursor.execute(sql)
-                for i in range(1,26):
-                    sql = """INSERT INTO playerinfo VALUES ('%s', %d, '%s', '', '%s', '', '')"""%(res.group(1), i, type[i+1], group)
-                    cursor.execute(sql)
-                replycontent = '开团成功！'
+                replycontent = "团名已存在，请换一个试试"
             else:
-                replycontent = '开团失败，请确认配置信息是否正确'
-                
+                sql = """SELECT * FROM members WHERE title = '%s' AND (name = '%s' OR name = 'everyone')"""%(res.group(4),name)
+                cursor.execute(sql)
+                result = cursor.fetchall()
+                if result:
+                    type = result[0]
+                    sql = """INSERT INTO schedule VALUES ('%s', '%s', '%s', '%s', 0)"""%(res.group(1), res.group(2), res.group(3), group)
+                    cursor.execute(sql)
+                    for i in range(1,26):
+                        sql = """INSERT INTO playerinfo VALUES ('%s', %d, '%s', '', '%s', '', '')"""%(res.group(1), i, type[i+1], group)
+                        cursor.execute(sql)
+                    replycontent = '开团成功！'
+                else:
+                    replycontent = '开团失败，请确认配置信息是否正确'
+                    
         res = re.search("^结束 (.+?)( (.+))?$", content)
         if res:  
             if res.group(3) is not None:
@@ -377,7 +409,7 @@ def handle():
             cursor.execute(sql)
             rr = cursor.fetchall()
             if rr:
-                sql = """UPDATE playerinfo SET name = '' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
+                sql = """UPDATE playerinfo SET name = '', gameid = '' WHERE sch = '%s' AND mygroup = '%s' AND id = %d"""%(res.group(1), group, int(res.group(2)))
                 cursor.execute(sql)
                 
                 sql = """SELECT id from playerinfo WHERE name != '' AND sch = '%s' AND mygroup = '%s'"""%(res.group(1), group)
@@ -476,27 +508,35 @@ def handle():
         res = re.search("^新建配置 (.+):(.+)$", content)
         if res: 
             title = res.group(1)
-            str2 = res.group(2).split(' ')
-            typelist = []
-            if (len(str2) == 25):
-                flag = 1
-                for type in str2:
-                    if type not in nickname.keys():
-                        flag = 0
-                        break
-                    typelist.append(nickname[type])
-                if flag == 1:
-                    sql = """INSERT INTO members VALUES ('%s', '%s'"""%(name, title)
-                    for i in range(25):
-                        sql += ", '%s'"%typelist[i]
-                    sql += ')'
-                    print(sql)
-                    cursor.execute(sql)
-                    replycontent = '新建配置成功！'
-                else:
-                    replycontent = '新建配置失败，请确认信息是否正确'
+            sql = """SELECT * FROM members WHERE title = '%s' AND name = '%s'"""%(title, name)
+            cursor.execute(sql)
+            res = cursor.fetchall()
+            if res:
+                replycontent = '该名称已存在，请换一个试试'
             else:
-                replycontent = '新建配置失败，请确认信息是否正确'
+                str2 = res.group(2).split(' ')
+                typelist = []
+                if (len(str2) == 25):
+                    flag = 1
+                    unknown = ""
+                    for type in str2:
+                        if type not in nickname.keys():
+                            flag = 0
+                            unknown = type
+                            break
+                        typelist.append(nickname[type])
+                    if flag == 1:
+                        sql = """INSERT INTO members VALUES ('%s', '%s'"""%(name, title)
+                        for i in range(25):
+                            sql += ", '%s'"%typelist[i]
+                        sql += ')'
+                        print(sql)
+                        cursor.execute(sql)
+                        replycontent = '新建配置成功！'
+                    else:
+                        replycontent = '新建配置失败:职业 %s 未知'%unknown
+                else:
+                    replycontent = '新建配置失败: 长度为 %d'%len(str2)
         
     if True:
         p = random.randint(1,10)
@@ -645,11 +685,14 @@ def handle():
     db.close()  
     
     if len(replycontent) > 30:
-        if app.info[jdata["group"]]['time'] > int(jdata['time']) - 120:
-            replycontent = ''
+        replycontent = replycontent + '\n此条消息触发cd'
+        time = int(jdata['time'])
+        if app.info[jdata["group"]]['cd'] < time:
+            app.info[jdata["group"]]['cd'] = max(time, app.info[jdata["group"]]['cd2']) + 120
+        elif app.info[jdata["group"]]['cd2'] < time:
+            app.info[jdata["group"]]['cd2'] = max(time, app.info[jdata["group"]]['cd']) + 120
         else:
-            app.info[jdata["group"]]['time'] = int(jdata['time'])
-        print(int(jdata['time']))
+            replycontent = ''
     
     if replycontent != '':
         replydata = {'reply':replycontent}
@@ -661,32 +704,42 @@ if __name__ == '__main__':
     import signal
     
     app.info = {
-      'miaomiao测试群':{'owner':['缥缈☆5.9维','眼眸印温柔','陈必过','韩景萱','无劫','长生如我-','楚🐳','Teemo','Mistletoe','  沐七。','非语','平庸的暧昧。','雨文','番茄茄茄茄茄','蛋叉蜀黍~','温粥与你立黄昏','舟舟','叶、狸','剑挽歌','大文小舍院。',], 'help':1, 'base': 'miaomiao测试群', 'time':0},
-      '【千衷】团本通知群':{'owner':['缥缈☆5.9维',], 'help':1, 'base': '【千衷】团本通知群', 'time':0},
-      '《晚枫》':{'owner':['缥缈☆5.9维',], 'help':1, 'base': '【千衷】团本通知群', 'time':0},
-      '【赤繁】妈耶饭里有砂':{'owner':['眼眸印温柔','陈必过'], 'help':1, 'base': '【赤繁】妈耶饭里有砂', 'time':0},
-      '我们的家~啾啾啾':{'owner':['韩景萱',], 'help':1, 'base': '我们的家~啾啾啾', 'time':0},
-      '师门炸金花':{'owner':['无劫',], 'help':1, 'base': '师门炸金花', 'time':0},
-      '颜值扛把子落花飞雪':{'owner':['长生如我-',], 'help':1, 'base': '颜值扛把子落花飞雪', 'time':0},
-      '君不弃大型相亲现场':{'owner':['楚🐳',], 'help':1, 'base': '君不弃大型相亲现场', 'time':0},
-      '【烟雨阁】咸鱼养老群':{'owner':['Teemo',], 'help':1, 'base': '【烟雨阁】咸鱼养老群', 'time':0},
-      '【懒】弱智儿童教学班':{'owner':['Mistletoe',], 'help':1, 'base': '【懒】弱智儿童教学班', 'time':0},
-      '萌新基佬群':{'owner':['  沐七。',], 'help':1, 'base': '萌新基佬群', 'time':0},
-      '卧龙':{'owner':['非语',], 'help':1, 'base': '卧龙', 'time':0},
-      '浮雪老年过气团':{'owner':['平庸的暧昧。',], 'help':1, 'base': '浮雪老年过气团', 'time':0},
-      '高颜值咸鱼群':{'owner':['雨文',], 'help':1, 'base': '高颜值咸鱼群', 'time':0},
-      '团名是啥！':{'owner':['番茄茄茄茄茄',], 'help':1, 'base': '团名是啥！', 'time':0},
-      '女神保护基地':{'owner':['蛋叉蜀黍~',], 'help':1, 'base': '女神保护基地', 'time':0},
-      '青芒散尽又经年':{'owner':['温粥与你立黄昏',], 'help':1, 'base': '青芒散尽又经年', 'time':0},
-      '咕咕咕':{'owner':['舟舟',], 'help':1, 'base': '咕咕咕', 'time':0},
-      '【丫儿呦】今晚有团吗':{'owner':['叶、狸',], 'help':1, 'base': '【丫儿呦】今晚有团吗', 'time':0},
-      '〖天问〗加班团':{'owner':['剑挽歌',], 'help':1, 'base': '〖天问〗加班团', 'time':0},
-      '【春辞秋折】副本群':{'owner':['大文小舍院。',], 'help':1, 'base': '【春辞秋折】副本群', 'time':0},
-      '【千衷不渝养老院】':{'owner':['缥缈☆5.9维',], 'help':1, 'base': '【千衷不渝养老院】', 'time':0},
-      '风雨歇处既归涯':{'owner':['有风风',], 'help':1, 'base': '风雨歇处既归涯', 'time':0},
-      '一群小居居':{'owner':['我还能活多久',], 'help':1, 'base': '一群小居居', 'time':0},
-      
+      'miaomiao测试群':{'owner':['缥缈☆5.9维','眼眸印温柔','陈必过','韩景萱','无劫','长生如我-','楚🐳','Teemo','Mistletoe','  沐七。','非语','平庸的暧昧。','雨文','番茄茄茄茄茄','蛋叉蜀黍~','温粥与你立黄昏','舟舟','叶、狸','剑挽歌','大文小舍院。',], 'help':1, 'smoke':1, 'base': 'miaomiao测试群'},
+      '【千衷】团本通知群':{'owner':['缥缈☆5.9维',], 'help':1, 'smoke':1, 'base': '【千衷】团本通知群'},
+      '《晚枫》':{'owner':['缥缈☆5.9维',], 'help':1, 'smoke':0, 'base': '【千衷】团本通知群'},
+      '【赤繁】妈耶饭里有砂':{'owner':['眼眸印温柔','陈必过'], 'help':0, 'smoke':0, 'base': '【赤繁】妈耶饭里有砂'},
+      '我们的家~啾啾啾':{'owner':['韩景萱',], 'help':0, 'smoke':0, 'base': '我们的家~啾啾啾'},
+      '师门炸金花':{'owner':['无劫',], 'help':0, 'smoke':0, 'base': '师门炸金花'},
+      '颜值扛把子落花飞雪':{'owner':['长生如我-','The best plan'], 'help':0, 'smoke':0, 'base': '颜值扛把子落花飞雪'},
+      '君不弃大型相亲现场':{'owner':['楚🐳',], 'help':0, 'smoke':0, 'base': '君不弃大型相亲现场'},
+      '【烟雨阁】咸鱼养老群':{'owner':['Teemo',], 'help':0, 'smoke':0, 'base': '【烟雨阁】咸鱼养老群'},
+      '【懒】弱智儿童教学班':{'owner':['Mistletoe',], 'help':0, 'smoke':0, 'base': '【懒】弱智儿童教学班'},
+      '萌新基佬群':{'owner':['  沐七。',], 'help':0, 'smoke':0, 'base': '萌新基佬群'},
+      '卧龙':{'owner':['非语',], 'help':0, 'smoke':0, 'base': '卧龙'},
+      '浮雪老年过气团':{'owner':['平庸的暧昧。',], 'help':0, 'smoke':0, 'base': '浮雪老年过气团'},
+      '高盐值咸鱼群':{'owner':['雨文',], 'help':0, 'smoke':0, 'base': '高盐值咸鱼群'},
+      '团名是啥！':{'owner':['番茄茄茄茄茄',], 'help':0, 'smoke':0, 'base': '团名是啥！'},
+      '女神保护基地':{'owner':['蛋叉蜀黍~',], 'help':0, 'smoke':0, 'base': '女神保护基地'},
+      '青芒散尽又经年':{'owner':['温粥与你立黄昏',], 'help':0, 'smoke':0, 'base': '青芒散尽又经年'},
+      '咕咕咕':{'owner':['舟舟',], 'help':0, 'smoke':0, 'base': '咕咕咕'},
+      '【丫儿呦】今晚有团吗':{'owner':['叶、狸',], 'help':0, 'smoke':0, 'base': '【丫儿呦】今晚有团吗'},
+      '〖天问〗加班团':{'owner':['剑挽歌',], 'help':0, 'smoke':0, 'base': '〖天问〗加班团'},
+      '【春辞秋折】副本群':{'owner':['大文小舍院。',], 'help':0, 'smoke':0, 'base': '【春辞秋折】副本群'},
+      '【千衷不渝养老院】':{'owner':['缥缈☆5.9维',], 'help':1, 'smoke':1, 'base': '【千衷不渝养老院】'},
+      '风雨歇处既归涯':{'owner':['有风风',], 'help':0, 'smoke':0, 'base': '风雨歇处既归涯'},
+      '一群小居居':{'owner':['我还能活多久',], 'help':0, 'smoke':0, 'base': '一群小居居'},
+      '在剑三你甚至可以打本':{'owner':['慑、、不是射',], 'help':0, 'smoke':0, 'base': '在剑三你甚至可以打本'},
+      '天天见玄晶':{'owner':['Candy',], 'help':0, 'smoke':0, 'base': '天天见玄晶'},
+      '菜刀队':{'owner':['闵松月','静候轮回'], 'help':0, 'smoke':0, 'base': '菜刀队'},
+      '菜刀队固定团':{'owner':['闵松月','静候轮回'], 'help':0, 'smoke':0, 'base': '菜刀队固定团'},
+      '小欢乐':{'owner':['一晌贪欢'], 'help':0, 'smoke':0, 'base': '小欢乐'},
+      '醉月开荒大队':{'owner':['Teemo'], 'help':0, 'smoke':0, 'base': '醉月开荒大队'},
     }
+    app.overallcd = 0
+    for x in app.info.keys():
+        app.info[x]['cd'] = 0
+        app.info[x]['cd2'] = 0
+        app.info[x]['ultcd'] = 0
     app.ownGroup = {}
     app.groupLink = {}
     for group in app.info.keys():
