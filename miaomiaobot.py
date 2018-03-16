@@ -306,12 +306,12 @@ def handle():
                 if len(message) > 50:
                     replycontent = "消息过长，请控制在50个字符以内~"
                 elif app.info[jdata["group"]]['cd'] > time:
-                    replycontent = "该群的发起互助处于cd中，剩余%d秒"%(time - app.info[jdata["group"]]['cd'])
+                    replycontent = "该群的发起互助处于cd中，剩余%d秒"%(app.info[jdata["group"]]['cd'] - time)
                 elif app.overallcd > time:
-                    replycontent = "发起互助处于公共cd中，剩余%d秒"%(time - app.overallcd)
+                    replycontent = "发起互助处于公共cd中，剩余%d秒"%(app.overallcd - time)
                 else:
                     app.overallcd = time + 300
-                    app.info[jdata["group"]['cd']] = time + 10800
+                    app.info[jdata["group"]]['cd'] = time + 10800
                     for group in info.keys():
                         if group['help'] == 1:
                             response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/send_group_message?id=%s&content=%s&async=1'%(group['id'],urllib.parse.quote(message)))
@@ -735,6 +735,7 @@ if __name__ == '__main__':
       '菜刀队固定团':{'owner':['闵松月','静候轮回'], 'help':0, 'smoke':0, 'base': '菜刀队固定团'},
       '小欢乐':{'owner':['一晌贪欢'], 'help':0, 'smoke':0, 'base': '小欢乐'},
       '醉月开荒大队':{'owner':['Teemo'], 'help':0, 'smoke':0, 'base': '醉月开荒大队'},
+      '亢龙戒网瘾中心':{'owner':['Unknown'], 'help':0, 'smoke':0, 'base': '亢龙戒网瘾中心'},
     }
     app.overallcd = 0
     for x in app.info.keys():
