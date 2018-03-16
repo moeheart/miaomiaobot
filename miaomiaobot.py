@@ -32,13 +32,12 @@ def updateid():
     html = response.read()
     jsonf = json.loads(html.decode())
     for line in jsonf:  
-        if line["id"] in app.info.keys():
+        if line["name"] in app.info.keys():
             app.info[line["name"]]['id'] = line["id"]
         
     print(app.admininfo)
     print(app.adminlist)
     print(app.ownGroup)
-    print(app.info["【千衷】团本通知群"])
     
 def setnickname():
     nicknamelist = {
@@ -315,8 +314,6 @@ def handle():
                     app.info[jdata["group"]]['ultcd'] = time + 10800
                     for group in app.info.keys():
                         if app.info[group]['help'] == 1:
-                            print(group)
-                            print(app.info[group])
                             response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/send_group_message?id=%d&content=%s&async=1'%(app.info[group]['id'],urllib.parse.quote(message)))
 
         if content == "团长使用说明":
