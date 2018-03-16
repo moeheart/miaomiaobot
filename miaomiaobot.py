@@ -298,7 +298,7 @@ def handle():
     
     if ("sender" in jdata.keys()) and (jdata["sender_id"] in app.adminlist):
         name = jdata["sender"]
-        time = time = int(jdata['time'])
+        time = int(jdata['time'])
         if (app.info[jdata["group"]]["help"] == 1):
             res = re.search("^互助 (.+)$", content)
             if res:
@@ -308,7 +308,7 @@ def handle():
                 elif app.info[jdata["group"]]['cd'] > time:
                     replycontent = "该群的发起互助处于cd中，剩余%d秒"%(time - app.info[jdata["group"]]['cd'])
                 elif app.overallcd > time:
-                    replycontent = "发起互助处于公共cd中，剩余%d秒"%(time - overallcd)
+                    replycontent = "发起互助处于公共cd中，剩余%d秒"%(time - app.overallcd)
                 else:
                     app.overallcd = time + 300
                     app.info[jdata["group"]['cd']] = time + 10800
