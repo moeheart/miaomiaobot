@@ -312,6 +312,7 @@ def handle():
                 else:
                     app.overallcd = time + 300
                     app.info[jdata["group"]]['ultcd'] = time + 10800
+                    message = '---互助消息---\n'+message
                     for group in app.info.keys():
                         if app.info[group]['help'] == 1:
                             response = urllib.request.urlopen('http://127.0.0.1:5000/openqq/send_group_message?id=%d&content=%s&async=1'%(app.info[group]['id'],urllib.parse.quote(message)))
@@ -735,7 +736,7 @@ if __name__ == '__main__':
       '菜刀队固定团':{'owner':['闵松月','静候轮回'], 'help':0, 'smoke':0, 'base': '菜刀队固定团'},
       '小欢乐':{'owner':['一晌贪欢'], 'help':0, 'smoke':0, 'base': '小欢乐'},
       '醉月开荒大队':{'owner':['Teemo'], 'help':0, 'smoke':0, 'base': '醉月开荒大队'},
-      '亢龙戒网瘾中心':{'owner':['Unknown'], 'help':0, 'smoke':0, 'base': '亢龙戒网瘾中心'},
+      '亢龙戒网瘾中心':{'owner':['喵门提督'], 'help':0, 'smoke':0, 'base': '亢龙戒网瘾中心'},
     }
     app.overallcd = 0
     for x in app.info.keys():
@@ -758,4 +759,4 @@ if __name__ == '__main__':
     updateid()
     setnickname()
     
-    app.run(host='0.0.0.0', port=8888, debug=True)
+    app.run(host='0.0.0.0', port=8888, debug=False, processes=3)
