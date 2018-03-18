@@ -85,7 +85,7 @@ def setnickname():
 def handletest():
     id = app.info['miaomiao测试群']['id']
     message = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())) + '，miaomiao还活着'
-    urllib.request.urlopen('http://127.0.0.1:5000/openqq/send_group_message?id=%d&content=%s&async=1'%(app.info[group]['id'],urllib.parse.quote(message)))
+    urllib.request.urlopen('http://127.0.0.1:5000/openqq/send_group_message?id=%d&content=%s&async=1'%(id,urllib.parse.quote(message)))
     
 @app.route('/', methods=['POST'])
 def handle():    
