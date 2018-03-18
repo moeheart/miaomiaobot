@@ -8,6 +8,7 @@ import read
 import re
 import pymysql
 import random
+import time
 import urllib.request
 
 app = Flask(__name__) 
@@ -79,6 +80,12 @@ def setnickname():
         for y in nicknamelist[x]:
             nickname[y] = x
     app.nickname = nickname
+
+@app.route('/testalive', methods=['GET','POST'])
+def handle():
+    id = app.info['miaomiao测试群']['id']
+    message = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())) + '，miaomiao还活着'
+    urllib.request.urlopen('http://127.0.0.1:5000/openqq/send_group_message?id=%d&content=%s&async=1'%(app.info[group]['id'],urllib.parse.quote(message)))
     
 @app.route('/', methods=['POST'])    
 def handle():    
@@ -299,7 +306,7 @@ def handle():
     if ("sender" in jdata.keys()) and (jdata["sender_id"] in app.adminlist):
         name = jdata["sender"]
         time = int(jdata['time'])
-        if "group" in jdata.keys() and (app.info[jdata["group"]]["help"] == 1):
+        if "group" in jdata.keys() and (jdata["group"] != "miaomiao测试群") and (app.info[jdata["group"]]["help"] == 1):
             res = re.search("^互助 (.+)$", content)
             if res:
                 message = res.group(1)
@@ -652,7 +659,11 @@ def handle():
                 elif type == "气纯":
                     replycontent = '/fcast [nobuff:破苍穹] 破苍穹\n/cast [bufftime:气剑<3|nobuff:气剑] 万世不竭\n/fcast [qidian>8] 两仪化形\n/fcast 四象轮回\n/fcast 剑出鸿蒙\n/fcast 六合独尊'
                 elif type == "藏剑":
-                    replycontent = '重剑循环：\n/cast [buff:莺鸣&buff:夜雨] 峰插云景\n/cast [buff:夜雨] 松舍问霞\n/cast [buff:夜雨] 云飞玉皇\n/cast [rage<101] 听雷\n/cast 夕照雷峰\n轻剑：\n/cast 啸日\n/cast [rage>15&rage<50] 平湖断月\n/cast [rage>30&rage<80] 黄龙吐翠\n/cast 断潮\n/cast 听雷'
+                    if p<2:
+                        replycontent = '/cast [nobuff:米] 买米\n/cast [nobuff:键盘] 买键盘\n/cast [nobuff:鸽] 买鸽\n/cast [buff:米<9|buff:键盘|buff:鸽] 撒米\n/cast 啄'
+                        trick = 1
+                    else:
+                        replycontent = '重剑循环：\n/cast [buff:莺鸣&buff:夜雨] 峰插云景\n/cast [buff:夜雨] 松舍问霞\n/cast [buff:夜雨] 云飞玉皇\n/cast [rage<101] 听雷\n/cast 夕照雷峰\n轻剑：\n/cast 啸日\n/cast [rage>15&rage<50] 平湖断月\n/cast [rage>30&rage<80] 黄龙吐翠\n/cast 断潮\n/cast 听雷'
                 elif type == "霸刀":
                     replycontent = '秀明尘身：\n/cast [nobuff:疏狂] 西楚悲歌\n/cast [rage<26&nobuff:逐鹿] 松烟竹雾\n/cast [rage<91&sun>64&nobuff:逐鹿] 雪絮金屏\n/cast 破釜沉舟\n/cast 雷走风切\n/cast 项王击鼎\n雪絮金屏:\n/cast 坚壁清野\n/cast [sun<41&nobuff:含风] 秀明尘身\n/cast [buff:含风>1|nobuff:含风] 醉斩白蛇\n/cast 刀啸风吟\n松烟竹雾：\n/fcast [tnobuff:闹须弥] 闹须弥\n/cast [rage>89] 秀明尘身\n/cast [sun>64] 雪絮金屏\n/cast 擒龙六斩\n/cast 逐鹰式\n/cast 控鹤式\n/cast 起凤式'
                 elif type == "丐帮":
@@ -670,7 +681,11 @@ def handle():
                     else:
                         replycontent = '/cast [tnobuff:穿心] 穿心弩\n/cast [buff:追命无声|bufftime:侵火动旌>13] 追命箭\n/cast [buff:追命无声] 心无旁骛\n/cast 夺魄箭'
                 elif type == "铁骨":
-                    replycontent = '/cast 盾回\n/cast 寒啸千军\n/cast [energy<71] 盾壁\n/cast [rage>14] 盾挡\n/cast 盾压\n/cast 盾刀'
+                    if p<=2:
+                        replycontent = '/msg 请输入wifi密码'
+                        trick = 1
+                    else:
+                        replycontent = '/cast 盾回\n/cast 寒啸千军\n/cast [energy<71] 盾壁\n/cast [rage>14] 盾挡\n/cast 盾压\n/cast 盾刀'
                 elif type == "大师":
                     replycontent = '/cast [qidian>2] 罗汉金身\n/cast [qidian>2] 拿云式\n/cast [qidian>2] 韦陀献杵\n/cast 横扫六合\n/cast 守缺式\n/cast 普渡四方\n/cast 捕风式'
                 elif type == "焚影":
@@ -719,7 +734,8 @@ if __name__ == '__main__':
       '萌新基佬群':{'owner':['  沐七。',], 'help':0, 'smoke':0, 'base': '萌新基佬群'},
       '卧龙':{'owner':['非语',], 'help':0, 'smoke':0, 'base': '卧龙'},
       '浮雪老年过气团':{'owner':['平庸的暧昧。',], 'help':0, 'smoke':0, 'base': '浮雪老年过气团'},
-      '高盐值咸鱼群':{'owner':['雨文',], 'help':0, 'smoke':0, 'base': '高盐值咸鱼群'},
+      '高盐值咸鱼群':{'owner':['雨文',], 'help':1, 'smoke':0, 'base': '高盐值咸鱼群'},
+      '小橙武制作中请稍后':{'owner':['雨文',], 'help':1, 'smoke':0, 'base': '小橙武制作中请稍后'},
       '胖成球！':{'owner':['番茄茄茄茄茄',], 'help':1, 'smoke':0, 'base': '胖成球！'},
       '女神保护基地':{'owner':['蛋叉蜀黍~',], 'help':0, 'smoke':0, 'base': '女神保护基地'},
       '青芒散尽又经年':{'owner':['温粥与你立黄昏',], 'help':0, 'smoke':0, 'base': '青芒散尽又经年'},
@@ -736,8 +752,9 @@ if __name__ == '__main__':
       '菜刀队固定团':{'owner':['闵松月','静候轮回'], 'help':0, 'smoke':0, 'base': '菜刀队固定团'},
       '小欢乐':{'owner':['一晌贪欢'], 'help':0, 'smoke':0, 'base': '小欢乐'},
       '醉月开荒大队':{'owner':['Teemo'], 'help':0, 'smoke':0, 'base': '醉月开荒大队'},
-      '亢龙戒网瘾中心':{'owner':['喵门提督'], 'help':0, 'smoke':0, 'base': '亢龙戒网瘾中心'},
-      '亢龙戒网瘾中心':{'owner':['陆发花'], 'help':0, 'smoke':0, 'base': '亢龙戒网瘾中心'},
+      '亢龙戒网瘾中心':{'owner':['喵门提督','陆发花'], 'help':0, 'smoke':0, 'base': '亢龙戒网瘾中心'},
+      '霍格沃兹戏精学院':{'owner':['阴郁者的趋光性'], 'help':1, 'smoke':0, 'base': '霍格沃兹戏精学院'},
+      '【糖醋璃叽】我最爱！':{'owner':['｡◕‿◕｡'], 'help':0, 'smoke':0, 'base': '【糖醋璃叽】我最爱！'},
     }
     app.overallcd = 0
     for x in app.info.keys():
