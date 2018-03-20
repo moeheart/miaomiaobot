@@ -680,7 +680,7 @@ def handle():
                         trick = 1
                     else:
                         replycontent = '/cast [tnobuff:穿心] 穿心弩\n/cast [buff:追命无声|bufftime:侵火动旌>13] 追命箭\n/cast [buff:追命无声] 心无旁骛\n/cast 夺魄箭'
-                elif type == "铁骨":
+                elif type == "苍云":
                     if p<=2:
                         replycontent = '/msg 请输入wifi密码'
                         trick = 1
