@@ -306,7 +306,7 @@ def handle():
     if ("sender" in jdata.keys()) and (jdata["sender_id"] in app.adminlist):
         name = jdata["sender"]
         time = int(jdata['time'])
-        if "group" in jdata.keys() and (jdata["group"] != "miaomiao测试群") and (app.info[jdata["group"]]["help"] == 1):
+        if "group" in jdata.keys() and (jdata["group"] in savedGroup) and (jdata["group"] != "miaomiao测试群") and (app.info[jdata["group"]]["help"] == 1):
             res = re.search("^互助 (.+)$", content)
             if res:
                 message = res.group(1)
