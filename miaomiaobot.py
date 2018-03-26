@@ -755,6 +755,13 @@ if __name__ == '__main__':
       '亢龙戒网瘾中心':{'owner':['喵门提督','陆发花'], 'help':0, 'smoke':0, 'base': '亢龙戒网瘾中心'},
       '霍格沃兹戏精学院':{'owner':['阴郁者的趋光性'], 'help':1, 'smoke':0, 'base': '霍格沃兹戏精学院'},
       '【糖醋璃叽】我最爱！':{'owner':['｡◕‿◕｡'], 'help':0, 'smoke':0, 'base': '【糖醋璃叽】我最爱！'},
+      '忘生·超跑俱乐部':{'owner':['赵恩。'], 'help':0, 'smoke':0, 'base': '忘生·超跑俱乐部'},
+      '郎中的医馆':{'owner':['若与卿老'], 'help':0, 'smoke':0, 'base': '郎中的医馆'},
+      '猪精聚集地！YY424348':{'owner':['我饿'], 'help':0, 'smoke':0, 'base': '猪精聚集地！YY424348'},
+      '一个秘密组织':{'owner':['明教一只喵'], 'help':0, 'smoke':0, 'base': '一个秘密组织'},
+      '【久伴】':{'owner':['专职PVE演员_沐白'], 'help':0, 'smoke':0, 'base': '【久伴】'},
+      '喵喵喵':{'owner':['Akai'], 'help':0, 'smoke':0, 'base': '喵喵喵'},
+      '大唐驻西域DPS研究协会':{'owner':['喵门提督'], 'help':0, 'smoke':0, 'base': '大唐驻西域DPS研究协会'},
     }
     app.overallcd = 0
     for x in app.info.keys():
