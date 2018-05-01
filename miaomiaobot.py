@@ -86,7 +86,7 @@ def getreply():
     with open("reply.json","w") as f:
         json.dump(baseData,f)
         
-    with open("reply.json","w") as f:
+    with open("reply.json","r") as f:
         replyData = json.load(f)
     app.replyData = replyData
     
