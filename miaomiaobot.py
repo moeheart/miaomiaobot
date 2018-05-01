@@ -82,9 +82,9 @@ def setnickname():
     app.nickname = nickname
     
 def getreply():
-    #baseData = {'miaomiao测试群': {'测试': ['不用测试了，猫还活着']}}
-    #with open("reply.json","w") as f:
-    #    json.dump(baseData,f)
+    baseData = {'miaomiao测试群': {'测试': ['不用测试了，猫还活着']}}
+    with open("reply.json","w") as f:
+        json.dump(baseData,f)
         
     with open("reply.json","r") as f:
         replyData = json.load(f)
@@ -105,9 +105,11 @@ def addReply(j, trigger, rcontent, g):
     if trigger not in j[g]:
         j[g][trigger] = []
     j[g][trigger] += [rcontent]
+    return j
     
 def removeReply(j, trigger, rcontent, g): 
     j[g][trigger].remove(rcontent) 
+    return j
 
 @app.route('/testalive', methods=['GET','POST'])
 def handletest():
@@ -586,7 +588,7 @@ def handle():
                 replyData = addReply(replyData, trigger, rcontent, jdata["group"])
                 app.replyData = replyData
                 with open("reply.json","w") as f:
-                    json.dump(baseData,f)
+                    json.dump(replyData,f)
                 replycontent = '添加回复成功！'
         
         res = re.search("^删除 (.*) (.*)$", content)
@@ -597,7 +599,7 @@ def handle():
                 replydata = removeReply(replyData, trigger, rcontent, jdata["group"])
                 app.replyData = replyData
                 with open("reply.json","w") as f:
-                    json.dump(baseData,f)
+                    json.dump(replyData,f)
                 replycontent = '删除回复成功！'
             else:
                 replycontent = '删除回复失败，回复不存在！'
