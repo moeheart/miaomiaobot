@@ -87,7 +87,7 @@ def getreply():
         json.dump(baseData,f)
         
     with open("reply.json","w") as f:
-        replyData = json.load(load_f)
+        replyData = json.load(f)
     app.replyData = replyData
     
 def existsReply(j, trigger, rcontent, g):
