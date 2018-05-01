@@ -80,6 +80,34 @@ def setnickname():
         for y in nicknamelist[x]:
             nickname[y] = x
     app.nickname = nickname
+    
+def getreply():
+    baseData = {'miaomiao测试群': {'测试': ['不用测试了，猫还活着']}}
+    with open("reply.json","w") as f:
+        json.dump(baseData,f)
+        
+    with open("reply.json","w") as f:
+        replyData = json.load(load_f)
+    app.replyData = replyData
+    
+def existsReply(j, trigger, rcontent, g):
+    if g not in j:
+        return False
+    if trigger not in j[g]:
+        return False
+    if rcontent not in j[g][trigger]:
+        return False
+    return True
+    
+def addReply(j, trigger, rcontent, g): 
+    if g not in j:
+        j[g] = {}
+    if trigger not in j[g]:
+        j[g][trigger] = []
+    j[g][trigger] += [rcontent]
+    
+def removeReply(j, trigger, rcontent, g): 
+    j[g][trigger].remove(rcontent) 
 
 @app.route('/testalive', methods=['GET','POST'])
 def handletest():
@@ -140,6 +168,7 @@ def handle():
     ownGroup = app.ownGroup
     savedGroup = app.savedGroup
     groupLink = app.groupLink
+    replyData = app.replyData
     
     db = pymysql.connect("127.0.0.1","root","testpwd1","test",port=3306,charset='utf8')
     cursor = db.cursor()
@@ -546,8 +575,34 @@ def handle():
                         replycontent = '新建配置失败:职业 %s 未知'%unknown
                 else:
                     replycontent = '新建配置失败: 长度为 %d'%len(str2)
+                    
+        res = re.search("^回复 (.*) (.*)$", content)
+        if res:
+            trigger = res.group(1)
+            rcontent = res.group(2)
+            if existsReply(replyData, trigger, rcontent, jdata["group"]):
+                replycontent = '添加回复失败，回复已存在！'
+            else:
+                replyData = addReply(replyData, trigger, rcontent, jdata["group"])
+                app.replyData = replyData
+                with open("reply.json","w") as f:
+                    json.dump(baseData,f)
+                replycontent = '添加回复成功！'
         
-    if True:
+        res = re.search("^删除 (.*) (.*)$", content)
+        if res:
+            trigger = res.group(1)
+            rcontent = res.group(2)
+            if existsReply(replyData, trigger, rcontent, jdata["group"]):
+                replydata = removeReply(replyData, trigger, rcontent, jdata["group"])
+                app.replyData = replyData
+                with open("reply.json","w") as f:
+                    json.dump(baseData,f)
+                replycontent = '删除回复成功！'
+            else:
+                replycontent = '删除回复失败，回复不存在！'
+        
+    if replycontent == '':
         p = random.randint(1,10)
         
         res = re.search("^(.+)(四?)小药$", content)
@@ -698,6 +753,16 @@ def handle():
                     replycontent = ''
                 if replycontent != '' and trick == 0:
                     replycontent = '使用前请把符号（特别是大于/小于号）改为英文的！\n' + replycontent
+                    
+    if replycontent == '':
+        replyGroupData = replyData[jdata['group']]
+        replyList = []
+        for x in replyGroupData.keys():
+            if re.search(x, content):
+                replyList += replyGroupData[x]
+        if replyList != []:
+            replycontent = random.choice(replyList)
+                    
     db.commit()
     db.close()  
     
@@ -783,5 +848,6 @@ if __name__ == '__main__':
         app.savedGroup += app.ownGroup[admin]
     updateid()
     setnickname()
+    getreply()
     
     app.run(host='0.0.0.0', port=8888, debug=True)
