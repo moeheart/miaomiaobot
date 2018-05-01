@@ -754,7 +754,7 @@ def handle():
                 if replycontent != '' and trick == 0:
                     replycontent = '使用前请把符号（特别是大于/小于号）改为英文的！\n' + replycontent
                     
-    if replycontent == '':
+    if replycontent == '' and jdata['group'] in replyData:
         replyGroupData = replyData[jdata['group']]
         replyList = []
         for x in replyGroupData.keys():
