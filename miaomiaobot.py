@@ -82,9 +82,9 @@ def setnickname():
     app.nickname = nickname
     
 def getreply():
-    baseData = {'miaomiao测试群': {'测试': ['不用测试了，猫还活着']}}
-    with open("reply.json","w") as f:
-        json.dump(baseData,f)
+    #baseData = {'miaomiao测试群': {'测试': ['不用测试了，猫还活着']}}
+    #with open("reply.json","w") as f:
+    #    json.dump(baseData,f)
         
     with open("reply.json","r") as f:
         replyData = json.load(f)
@@ -829,6 +829,7 @@ if __name__ == '__main__':
       '【久伴】':{'owner':['专职PVE演员_沐白'], 'help':0, 'smoke':0, 'base': '【久伴】'},
       '喵喵喵':{'owner':['Akai'], 'help':0, 'smoke':0, 'base': '喵喵喵'},
       '大唐驻西域DPS研究协会':{'owner':['喵门提督'], 'help':0, 'smoke':0, 'base': '大唐驻西域DPS研究协会'},
+      '【蝉】固定团招人':{'owner':['烟花三月ゝ'], 'help':0, 'smoke':0, 'base': '【蝉】固定团招人'},
     }
     app.overallcd = 0
     for x in app.info.keys():
