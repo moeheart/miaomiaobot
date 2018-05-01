@@ -82,9 +82,9 @@ def setnickname():
     app.nickname = nickname
     
 def getreply():
-    baseData = {'miaomiao测试群': {'测试': ['不用测试了，猫还活着']}}
-    with open("reply.json","w") as f:
-        json.dump(baseData,f)
+    #baseData = {'miaomiao测试群': {'测试': ['不用测试了，猫还活着']}}
+    #with open("reply.json","w") as f:
+    #    json.dump(baseData,f)
         
     with open("reply.json","r") as f:
         replyData = json.load(f)
@@ -754,7 +754,7 @@ def handle():
                 if replycontent != '' and trick == 0:
                     replycontent = '使用前请把符号（特别是大于/小于号）改为英文的！\n' + replycontent
                     
-    if replycontent == '' and jdata['group'] in replyData:
+    if replycontent == '' and jdata['sender'] != "miaomiao" and jdata['group'] in replyData:
         replyGroupData = replyData[jdata['group']]
         replyList = []
         for x in replyGroupData.keys():
